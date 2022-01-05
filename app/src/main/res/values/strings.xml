@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">VisualDSA</string>
+    <string name="visualDSAstrings">VisualDSA</string>
+    <string name="watch_and_learn_the_algorithms">watch and learn the algorithms..</string>
+    <string name="ride_along_the_algorithms_as_they_go">Ride along the algorithms as they go..</string>
+    <string name="welcome">Welcome to VisualDSA</string>
+    <string name="search_algorithms">Search Algorithms</string>
+    <string name="sorting_algorithms">Sorting Algorithms</string>
+    <string name="graph_algorithms">Graph Algorithms</string>
+    <string name="tree_algorithms">Tree Algorithms</string>
+    <string name="todo">TODO</string>
+</resources>
