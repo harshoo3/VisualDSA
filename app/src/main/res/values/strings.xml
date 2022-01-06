@@ -9,4 +9,6 @@
     <string name="graph_algorithms">Graph Algorithms</string>
     <string name="tree_algorithms">Tree Algorithms</string>
     <string name="todo">TODO</string>
+    <string name="title">title</string>
+    <string name="description">description</string>
 </resources>

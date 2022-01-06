@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VisualDSA">
         <activity
+            android:name=".MyListAdapter"
+            android:exported="false" />
+        <activity
             android:name=".treeAlgoActivity"
             android:exported="false" />
         <activity
