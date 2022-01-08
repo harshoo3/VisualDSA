@@ -6,14 +6,103 @@
     android:layout_height="match_parent"
     tools:context=".searchingAlgoActivity">
 
+<!--    <TextView-->
+<!--        android:id="@+id/textView100"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="107dp"-->
+<!--        android:layout_marginTop="40dp"-->
+<!--        android:text="@string/search_algorithms"-->
+<!--        android:textSize="24sp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <LinearLayout
+        android:id="@+id/col0"
+        android:layout_width="201dp"
+        android:layout_height="379dp"
+        android:layout_weight="1"
+        android:baselineAligned="false"
+        android:orientation="vertical"
+
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="12dp"
+        tools:layout_editor_absoluteY="196dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="100dp"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
+
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/v0"
+        android:layout_width="47dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="348dp"
+        android:layout_marginTop="138dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="3"
+        android:text="@string/hello"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="169dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="36dp"
+        android:text="@string/randomize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="182dp"
+        android:layout_height="64dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="36dp"
+        android:text="@string/start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider"
+        android:layout_width="255dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="224dp"
+        android:layout_marginTop="264dp"
+        android:contentDescription="@string/slider"
+        android:rotation="270"
+        android:stepSize="1"
+        android:value="5"
+        android:valueFrom="2"
+        android:valueTo="20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView40"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="107dp"
-        android:layout_marginTop="40dp"
-        android:text="@string/search_algorithms"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="116dp"
+        android:text="@string/size"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,4 +11,31 @@
     <string name="todo">TODO</string>
     <string name="title">title</string>
     <string name="description">description</string>
+    <string name="autocompletetextview">AutoCompleteTextView</string>
+    <string name="hint">hint</string>
+    <string name="randomize">Randomize</string>
+    <string name="start">Start</string>
+    <string name="size">size</string>
+    <string name="slider">slider</string>
+    <string name="hello">hello</string>
+    <string-array name="searchAlgorithmList">
+        <item>Linear Search</item>
+        <item>Binary Search</item>
+    </string-array>
+    <string-array name="sortAlgorithmList">
+        <item>Bubble Sort</item>
+        <item>Insertion Sort</item>
+        <item>Merge Sort</item>
+        <item>Quick Sort</item>
+    </string-array>
+    <item type="id" name="b0" />
+    <item type="id" name="b1" />
+    <item type="id" name="b2" />
+    <item type="id" name="b3" />
+    <item type="id" name="b4" />
+    <item type="id" name="b5" />
+    <item type="id" name="b6" />
+    <item type="id" name="b7" />
+    <item type="id" name="b8" />
+    <item type="id" name="b9" />
 </resources>

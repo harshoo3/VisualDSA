@@ -15,6 +15,7 @@ import android.widget.AdapterView.OnItemClickListener
 import android.content.Intent
 
 import android.R.attr.button
+import android.view.Gravity
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.ListAdapter
@@ -30,8 +31,8 @@ class MainActivity : AppCompatActivity() {
         ".NET is a framework which is used to develop software applications."
     )
     val imageId = arrayOf<Int>(
-        R.drawable.android_logo,R.drawable.android_logo,R.drawable.android_logo,
-        R.drawable.android_logo
+        R.drawable.android_logo,R.drawable.search,R.drawable.graph1,
+        R.drawable.tree
     )
     lateinit var listView : ListView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,72 +71,28 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Click on item at $itemAtPos its item id $itemIdAtPos", Toast.LENGTH_LONG).show()
 
         }
+        supportActionBar?.apply {
+            // show custom title in action bar
+            customView = actionBarCustomTitle()
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
 
-//
-//        val arrayAdapter: ArrayAdapter<*>
-//        val users = arrayOf(
-//            "Searching", "Sorting", "Graph Algorithms",
-//            "Tree Algorithms"
-//        )
-//
-//        // access the listView from xml file
-//        var mListView = findViewById<ListView>(R.id.userlist)
-//        arrayAdapter = ArrayAdapter(this,
-//            android.R.layout.simple_list_item_1, users)
-//        mListView?.adapter = arrayAdapter
-////        button.setOnClickListener(object : OnClickListener() {
-////            fun onClick(viewClicked: View) {
-////                val intent = Intent(viewClicked.getContext(), ActivityX::class.java)
-////            }
-////        })
-//        mListView.setOnItemClickListener(OnItemClickListener { arg0, view, position, id -> // When clicked, show a toast with the TextView text
-//
-//            @Override
-//            fun onItemClick() {
-//                when (position) {
-//                    0->{val intent = Intent(this, searchingAlgoActivity::class.java);
-//                        startActivity(intent);
-//                        }
-//                    1->{val intent = Intent(this, sortingAlgoActivity::class.java);
-//                        startActivity(intent);
-//                    }
-//                    2->{val intent = Intent(this, graphAlgoActivity::class.java);
-//                        startActivity(intent);
-//                    }
-//                    3->{val intent = Intent(this, treeAlgoActivity::class.java);
-//                        startActivity(intent);
-//                    }
-//                }
-//            }
-//            onItemClick()
-////            @Override
-////            fun onItemClick() {
-////                when (position) {
-////                    0->{val intent = Intent(this, searchingAlgoActivity::class.java);
-////                        startActivity(intent);
-////                    }
-////                    1->{val intent = Intent(this, sortingAlgoActivity::class.java);
-////                        startActivity(intent);
-////                    }
-////                    2->{val intent = Intent(this, graphAlgoActivity::class.java);
-////                        startActivity(intent);
-////                    }
-////                    3->{val intent = Intent(this, treeAlgoActivity::class.java);
-////                        startActivity(intent);
-////                    }
-////
-////                }
-////            }
-//
-////            fun onClick() {
-////                val intent = Intent(this, sortingAlgoActivity::class.java)
-////                startActivity(intent)
-////            }
-////            onClick()
-//            Toast.makeText(
-//                applicationContext, (view as TextView).text,
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        })
+            setDisplayShowHomeEnabled(true)
+            setDisplayUseLogoEnabled(true)
+        }
+
+    }
+    private fun actionBarCustomTitle():TextView{
+        return TextView(this).apply {
+            text = "Welcome to VisualDSA"
+
+            val params = ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.WRAP_CONTENT
+            )
+            // center align the text view/ action bar title
+            params.gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = params
+            setTextSize(25F)
+        }
     }
 }
