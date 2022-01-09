@@ -34,6 +34,9 @@ class searchingAlgoActivity : AppCompatActivity() {
 //    lateinit var result: TextView
 //    val searchAlgorithmList = resources.getStringArray(R.array.searchAlgorithmList)
     var size:Int = 5
+//    var orderArray = Array(5,{1,2,3,4,5})
+    var themeColor:Int = Color.parseColor("#FFBB86FC")
+    var black:Int = Color.parseColor("#000000")
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -48,6 +51,8 @@ class searchingAlgoActivity : AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
             setDisplayUseLogoEnabled(true)
         }
+
+
         val slider = findViewById<Slider>(R.id.slider)
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
@@ -63,54 +68,76 @@ class searchingAlgoActivity : AppCompatActivity() {
             // Responds to when slider's value is changed
             destroyButtons()
             size = value.toInt()
-            createButtonGrid(size)
-
+            createButtonScreen(size)
+            createShuffledArrays(size)
         }
+
+        val button: Button = findViewById(R.id.randomize)
+        button.setOnClickListener {
+            // Code here executes on main thread after user presses button
+            createShuffledArrays(size)
+        }
+
 //        slider.addOnSliderTouchListener(touchListener)
         makeDropDown(arrayOf("Linear Search","Binary Search"),R.id.spinner)
         makeDropDown(arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x"),R.id.spinner2)
-        createButtonGrid(size)
-    }
+        createButtonScreen(size)
+        createShuffledArrays(size)
 
-    fun createButtonGrid(size: Int) {
-        // xml declared LIinear layout
+    }
+    fun createShuffledArrays(size: Int){
+        val orderArray = Array(size, { i -> i * 1 })
+        orderArray.shuffle()
+        colorButtonScreen(orderArray,size)
+    }
+    fun colorButtonScreen(orderArray:Array<Int>,size:Int){
+        for(i in 0..size-1){
+            colorFollowingButtons(orderArray,i,0,orderArray[i],themeColor)
+            colorFollowingButtons(orderArray,i,orderArray[i]+1,size-1,black)
+        }
+    }
+    fun colorFollowingButtons(orderArray:Array<Int>,row:Int,left:Int, right:Int,color:Int){
+        for(j in left..right){
+            buttons[row][j].setBackgroundColor(color)
+        }
+    }
+    fun createButtonScreen(size: Int) {
+
         var screenid = resources.getIdentifier("col0", "id", packageName)
         val screen=findViewById<LinearLayout>(screenid)
 
 
-        // new dynamically declared linear layout inside screen linearlayout so grid can be deleted at any time
         val buttonScreen = LinearLayout(this)
         buttonScreen.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
         )
-        buttonScreen.orientation = LinearLayout.HORIZONTAL
+        buttonScreen.orientation = LinearLayout.VERTICAL
         var buttonScreenid = resources.getIdentifier("buttonScreen", "id", packageName)
         buttonScreen.id=buttonScreenid
         screen.addView(buttonScreen)
 
-        for (i in 0..size) {
+        for (i in 1..size) {
 
-            val arrayLinearLayout = LinearLayout(this)
-            arrayLinearLayout.layoutParams = LinearLayout.LayoutParams(
+            val arr = LinearLayout(this)
+            arr.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,1.0f
             )
-            arrayLinearLayout.orientation = LinearLayout.VERTICAL
-            val buttoncol: MutableList<Button> = ArrayList()
-            for (j in 0..size) {
+            arr.orientation = LinearLayout.HORIZONTAL
+            val buttonrow: MutableList<Button> = ArrayList()
+            for (j in 1..size) {
                 val button = Button(this)
                 button.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
                     1.0f
                 )
-                buttoncol.add(button)
-                arrayLinearLayout.addView(button)
+                buttonrow.add(button)
+                arr.addView(button)
             }
-
-            buttons.add(buttoncol)
-            buttonScreen.addView(arrayLinearLayout)
+            buttons.add(buttonrow)
+            buttonScreen.addView(arr)
         }
     }
     fun destroyButtons(){
