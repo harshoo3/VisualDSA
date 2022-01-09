@@ -83,7 +83,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun actionBarCustomTitle():TextView{
         return TextView(this).apply {
-            text = "Welcome to VisualDSA"
+            text = "Welcome to VisualDSA" +
+                    ""
 
             val params = ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT,

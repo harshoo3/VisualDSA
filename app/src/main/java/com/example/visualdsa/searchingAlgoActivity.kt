@@ -2,6 +2,7 @@ package com.example.visualdsa
 
 import android.R.id
 import android.content.res.ColorStateList
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
@@ -20,14 +21,22 @@ import android.widget.TableLayout
 import android.widget.TextView
 
 import android.widget.LinearLayout
+import androidx.core.view.marginLeft
 import java.lang.Exception
+import com.google.android.material.slider.Slider
+
+
+
 
 
 class searchingAlgoActivity : AppCompatActivity() {
 //    lateinit var option: Spinner
 //    lateinit var result: TextView
 //    val searchAlgorithmList = resources.getStringArray(R.array.searchAlgorithmList)
+    var size:Int = 5
+    private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching_algo)
 
@@ -38,40 +47,86 @@ class searchingAlgoActivity : AppCompatActivity() {
 
             setDisplayShowHomeEnabled(true)
             setDisplayUseLogoEnabled(true)
-
         }
-        val buttonsNumber = 5 // Put here your number of buttons
-
-        val col0 = findViewById<View>(R.id.col0) as LinearLayout
-
-        for (i in 0 until buttonsNumber) {
-            try {
-                val newButton = Button(this)
-                newButton.id = id::class.java.getField("b$i").getInt(null)
-                // Since API Level 17, you can also use View.generateViewId()
-                newButton.layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 20, 1F)
-                newButton.text = "hello"
-                newButton.setBackgroundColor(4)
-                col0.addView(newButton)
-            } catch (e: Exception) {
-                // Unknown button id !
-                // We skip it
+        val slider = findViewById<Slider>(R.id.slider)
+        slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                // Responds to when slider's touch event is being started
             }
-        }
 
-//        val v0 = findViewById<View>(R.id.v0) as TextView
-//        v0.layoutParams =
-//            TableLayout.LayoutParams(
-//                LayoutParams.MATCH_PARENT, 100,
-//                (buttonsNumber - 1).toFloat()
-//            )
-        var options = arrayOf("Linear Search","Binary Search")
-        val spinner = findViewById<Spinner>(R.id.spinner)
-    val adapter = ArrayAdapter(
-        this,
-        android.R.layout.simple_list_item_1,
-        options
-    )
+            override fun onStopTrackingTouch(slider: Slider) {
+                // Responds to when slider's touch event is being stopped
+            }
+        })
+
+        slider.addOnChangeListener { slider, value, fromUser ->
+            // Responds to when slider's value is changed
+            destroyButtons()
+            size = value.toInt()
+            createButtonGrid(size)
+
+        }
+//        slider.addOnSliderTouchListener(touchListener)
+        makeDropDown(arrayOf("Linear Search","Binary Search"),R.id.spinner)
+        makeDropDown(arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x"),R.id.spinner2)
+        createButtonGrid(size)
+    }
+
+    fun createButtonGrid(size: Int) {
+        // xml declared LIinear layout
+        var screenid = resources.getIdentifier("col0", "id", packageName)
+        val screen=findViewById<LinearLayout>(screenid)
+
+
+        // new dynamically declared linear layout inside screen linearlayout so grid can be deleted at any time
+        val buttonScreen = LinearLayout(this)
+        buttonScreen.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        buttonScreen.orientation = LinearLayout.HORIZONTAL
+        var buttonScreenid = resources.getIdentifier("buttonScreen", "id", packageName)
+        buttonScreen.id=buttonScreenid
+        screen.addView(buttonScreen)
+
+        for (i in 0..size) {
+
+            val arrayLinearLayout = LinearLayout(this)
+            arrayLinearLayout.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,1.0f
+            )
+            arrayLinearLayout.orientation = LinearLayout.VERTICAL
+            val buttoncol: MutableList<Button> = ArrayList()
+            for (j in 0..size) {
+                val button = Button(this)
+                button.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f
+                )
+                buttoncol.add(button)
+                arrayLinearLayout.addView(button)
+            }
+
+            buttons.add(buttoncol)
+            buttonScreen.addView(arrayLinearLayout)
+        }
+    }
+    fun destroyButtons(){
+        var id = resources.getIdentifier("buttonScreen", "id", packageName)
+        val buttonScreen =findViewById<LinearLayout>(id)
+        (buttonScreen.getParent() as ViewGroup).removeView(buttonScreen)
+        buttons.removeAll(buttons)
+    }
+    fun makeDropDown(arr:Array<*>,id: Int){
+
+        val spinner = findViewById<Spinner>(id)
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            arr
+        )
         spinner.adapter=adapter
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -88,7 +143,6 @@ class searchingAlgoActivity : AppCompatActivity() {
             override fun onNothingSelected(arg0: AdapterView<*>?) {}
         }
     }
-
     private fun actionBarCustomTitle():TextView{
         return TextView(this).apply {
             text = "Search Algorithms"
