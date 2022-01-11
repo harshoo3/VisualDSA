@@ -20,6 +20,7 @@ import android.widget.TableLayout
 import android.widget.TextView
 
 import android.widget.LinearLayout
+import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import java.lang.Exception
 import com.google.android.material.slider.Slider
@@ -34,14 +35,22 @@ class searchingAlgoActivity : AppCompatActivity() {
     var orderArray = Array(size, { i -> i * 1 })
     var check:Boolean = false
     var selected:Int = -1
-    var map1= mutableMapOf<Int,Int>()
-
+    var buttonIdMap= mutableMapOf<Int,Int>()
+    var speedMap = mutableMapOf<String,Double>()
     val themeColor:Int = Color.parseColor("#FFBB86FC")
     val black:Int = Color.parseColor("#000000")
     val green:Int = Color.parseColor("#00FF00")
+    var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x","4x")
+    var searchAlgoArr = arrayOf("Linear Search","Binary Search")
+    var algoInUse:Int = 0
+    var speedInUSe: Double = 1.0
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
-
+//        speedMap["1x"]= 1
+        for(i in 0..speedArr.size-1){
+            speedMap[speedArr[i]]=1/(speedArr[i].subSequence(0,speedArr[i].length-1).toString().toDouble())
+            println(speedMap[speedArr[i]])
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching_algo)
 
@@ -59,6 +68,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 // Responds to when slider's touch event is being started
+
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
@@ -69,13 +79,17 @@ class searchingAlgoActivity : AppCompatActivity() {
         slider.addOnChangeListener { slider, value, fromUser ->
             // Responds to when slider's value is changed
             size = value.toInt()
-            standardSetup()
+            if(algoInUse==1) sortedSetup()
+            else standardSetup()
+//            standardSetup()
         }
 
         val button: Button = findViewById(R.id.randomize)
         button.setOnClickListener {
             // Code here executes on main thread after user presses button
-            standardSetup()
+            if(algoInUse==1) Toast.makeText(this,"Binary Search requires the elements to be sorted.",Toast.LENGTH_LONG).show()
+            else standardSetup()
+//            standardSetup()
         }
         val button2: Button = findViewById(R.id.start)
         button2.setOnClickListener {
@@ -87,8 +101,8 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
         createButtonScreen(size)
-        makeDropDown(arrayOf("Linear Search","Binary Search"),R.id.spinner)
-        makeDropDown(arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x"),R.id.spinner2)
+        makeDropDown(searchAlgoArr,R.id.spinner)
+        makeDropDown(speedArr,R.id.spinner2)
         standardSetup()
     }
 
@@ -105,7 +119,12 @@ class searchingAlgoActivity : AppCompatActivity() {
                     check = true
                     colorFollowingButtons(i,0,orderArray[i],green)
                 }
+
                 btn.setOnLongClickListener {
+                    if(algoInUse==1){
+                        Toast.makeText(this,"Drag and Drop not allowed in Binary Search mode",Toast.LENGTH_SHORT).show()
+                        return@setOnLongClickListener true
+                    }
                     val clipInt="$i"
                     val item=ClipData.Item(clipInt)
                     val mimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN)
@@ -135,23 +154,18 @@ class searchingAlgoActivity : AppCompatActivity() {
                         DragEvent.ACTION_DROP->{
                             val item = dragEvent.clipData.getItemAt(0)
                             val dragData = item.text.toString().toInt()
-                            val v=dragEvent.localState as View
                             val destination = view as Button
-//                            if(map1[destination.id]== null) {
-//                                println("No dest")
-//                                setUpWithoutShuffling(true)
-//                            }
-                            map1[destination.id]?.let { swap(dragData, it) }
+                            buttonIdMap[destination.id]?.let { swap(dragData, it) }
                             if(check){
                                 setUpWithoutShuffling(true)
-                                if(selected==map1[destination.id] || selected==dragData){
+                                if(selected==buttonIdMap[destination.id] || selected==dragData){
 
-                                    if(selected == map1[destination.id]!!){
+                                    if(selected == buttonIdMap[destination.id]!!){
                                         selected = dragData
                                         println(orderArray[selected])
                                         colorFollowingButtons(selected,0,orderArray[selected],green)
                                     }else{
-                                        selected = map1[destination.id]!!
+                                        selected = buttonIdMap[destination.id]!!
                                         colorFollowingButtons(selected,0,orderArray[selected],green)
                                     }
                                 }else{
@@ -177,6 +191,12 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
     }
+    fun linearSearch(){
+
+    }
+    fun binarySearch(){
+
+    }
     fun standardSetup(){
         destroyButtons()
         createButtonScreen(size)
@@ -189,6 +209,10 @@ class searchingAlgoActivity : AppCompatActivity() {
         createButtonScreen(size)
         colorButtonScreen(size)
         holdFunctionality()
+    }
+    fun sortedSetup(keep:Boolean = false){
+        orderArray = Array(size, { i -> i * 1 })
+        setUpWithoutShuffling(keep)
     }
     fun swap(i1:Int,i2:Int){
         var temp=orderArray[i1]
@@ -212,9 +236,8 @@ class searchingAlgoActivity : AppCompatActivity() {
     }
     fun createButtonScreen(size: Int) {
 
-        var screenid = resources.getIdentifier("col0", "id", packageName)
-        val screen=findViewById<LinearLayout>(screenid)
-
+        var layoutid = resources.getIdentifier("col0", "id", packageName)
+        val layout=findViewById<LinearLayout>(layoutid)
 
         val buttonScreen = LinearLayout(this)
         buttonScreen.layoutParams = LinearLayout.LayoutParams(
@@ -222,19 +245,18 @@ class searchingAlgoActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT
         )
         buttonScreen.orientation = LinearLayout.VERTICAL
+
         var buttonScreenid = resources.getIdentifier("buttonScreen", "id", packageName)
         buttonScreen.id=buttonScreenid
-//        println(buttonScreen.id)
-        screen.addView(buttonScreen)
-
+        layout.addView(buttonScreen)
         for (i in 1..size) {
-
             val arr = LinearLayout(this)
             arr.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,1.0f
             )
             arr.orientation = LinearLayout.HORIZONTAL
+            arr.setPadding(0,0,0,2)
             val buttonrow: MutableList<Button> = ArrayList()
             for (j in 1..size) {
                 val button = Button(this)
@@ -246,7 +268,7 @@ class searchingAlgoActivity : AppCompatActivity() {
 //                var buttonid = resources.getIdentifier("b_${i}_${j}", "id", packageName)
 //                println(button.id)
                 button.id=View.generateViewId()
-                map1[button.id] = i-1
+                buttonIdMap[button.id] = i-1
                 buttonrow.add(button)
                 arr.addView(button)
 //                println(button.id)
@@ -265,7 +287,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         }
         check = false
         selected=-1
-        map1.clear()
+        buttonIdMap.clear()
     }
     fun makeDropDown(arr:Array<*>,id: Int){
 
@@ -284,8 +306,15 @@ class searchingAlgoActivity : AppCompatActivity() {
                 arg3: Long
             ) {
                 // Do what you want
-                val items = spinner.selectedItem.toString()
-
+                val item = spinner.selectedItem.toString()
+                if(id == R.id.spinner){
+                    if(item == "Binary Search"){
+                        algoInUse = 1
+                        sortedSetup()
+                    }
+                }else{
+                    speedInUSe = speedMap[item]!!
+                }
             }
 
             override fun onNothingSelected(arg0: AdapterView<*>?) {}
