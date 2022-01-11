@@ -37,7 +37,7 @@ class searchingAlgoActivity : AppCompatActivity() {
     var orderArray = Array(size, { i -> i * 1 })
     var check:Boolean = false
     var selected:Int = -1
-    var algoRunning: Boolean= false
+
     var buttonIdMap= mutableMapOf<Int,Int>()
     var speedMap = mutableMapOf<String,Double>()
     val themeColor:Int = Color.parseColor("#FFBB86FC")
@@ -48,7 +48,7 @@ class searchingAlgoActivity : AppCompatActivity() {
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x","4x")
     var searchAlgoArr = arrayOf("Linear Search","Binary Search")
     var algoInUse:Int = 0
-
+    var algoRunning: Boolean= false
     var algoFinished:Boolean = false
     var algoPaused: Boolean = false
     var speedInUSe: Double = 1.0
@@ -77,7 +77,6 @@ class searchingAlgoActivity : AppCompatActivity() {
             setDisplayUseLogoEnabled(true)
         }
 
-
         val slider = findViewById<Slider>(R.id.slider)
         val button: Button = findViewById(R.id.randomize)
         val button2: Button = findViewById(R.id.start)
@@ -102,11 +101,8 @@ class searchingAlgoActivity : AppCompatActivity() {
 //            standardSetup()
         }
 
-
-
         button.setOnClickListener {
             if(algoRunning){
-                setUpWithoutShuffling(true)
                 algoFinished = true
             }
             else if(algoFinished) Toast.makeText(this,"Please Reset.",Toast.LENGTH_LONG).show()
@@ -124,7 +120,7 @@ class searchingAlgoActivity : AppCompatActivity() {
             }else if(algoRunning){
                 //pause functionality
                 algoPaused = true
-                button2.text = "Start"
+                button2.text = "Resume"
             }else if(algoFinished){
                 setUpWithoutShuffling(true)
             }
@@ -153,12 +149,14 @@ class searchingAlgoActivity : AppCompatActivity() {
                 val btn=buttons[i][j]
                 btn.setOnClickListener {
                     Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
-                    if(check){
-                        colorFollowingButtons(selected,0,orderArray[selected],themeColor)
+                    if(!algoRunning){
+                        if(check){
+                            colorFollowingButtons(selected,0,orderArray[selected],themeColor)
+                        }
+                        selected = i
+                        check = true
+                        colorSelectedRow()
                     }
-                    selected = i
-                    check = true
-                    colorSelectedRow()
                 }
                 btn.setOnLongClickListener {
                     if(algoRunning){
@@ -235,6 +233,64 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun linearSearch(){
+        GlobalScope.launch {
+            algoRunning = true
+            for(i in 0..size-1){
+                while(algoPaused){
+                    if(algoFinished){
+                        break
+                    }
+                    delay(100)
+                }
+                if(algoFinished) {
+                    algoFinishedFunctionality()
+                    break
+                }
+                colorFollowingButtons(i,0,orderArray[i],red)
+                delay(speed)
+                if(orderArray[selected]==orderArray[i]) {
+                    colorFollowingButtons(i, 0, orderArray[i], green)
+                    algoFinishedFunctionality()
+                    break
+                }
+            }
+        }
+
+    }
+    fun binarySearch(){
+        GlobalScope.launch {
+            var left:Int = 0
+            var right:Int = size-1
+            algoRunning=true
+            while(left<=right){
+                while(algoPaused){
+                    if(algoFinished){
+                        break
+                    }
+                    delay(100)
+                }
+                if(algoFinished) {
+                    algoFinishedFunctionality()
+                    break
+                }
+                var mid:Int = left+(right-left)/2
+                colorFollowingButtons(mid,0,orderArray[mid],red)
+                delay(speed)
+                if(orderArray[mid]==orderArray[selected]){
+                    colorFollowingButtons(mid,0,orderArray[mid],green)
+                    algoFinishedFunctionality()
+                    break
+                    //found
+                }else if(orderArray[mid]>orderArray[selected]){
+                    right = mid-1
+                }else{
+                    left = mid+1
+                }
+            }
+        }
+    }
     fun algoFinishedFunctionality(){
         val button: Button = findViewById(R.id.randomize)
         val button2: Button = findViewById(R.id.start)
@@ -255,35 +311,10 @@ class searchingAlgoActivity : AppCompatActivity() {
         slider.isEnabled = true
         algoFinished = false
         spinner.isEnabled = true
+        selected = -1
+        check = false
         button2.text = "Start"
     }
-    fun linearSearch(){
-        algoRunning = true
-        Toast.makeText(this,"$speed",Toast.LENGTH_SHORT).show()
-        GlobalScope.launch {
-            for(i in 0..size-1){
-                while(algoPaused){
-                    delay(100)
-                }
-                if(algoFinished) {
-                    algoFinishedFunctionality()
-                    break
-                }
-                colorFollowingButtons(i,0,orderArray[i],red)
-                delay(speed)
-                if(orderArray[selected]==orderArray[i]) {
-                    colorFollowingButtons(i, 0, orderArray[i], green)
-                    algoFinishedFunctionality()
-                    break
-                }
-            }
-        }
-
-    }
-    fun binarySearch(){
-
-    }
-
     fun colorSelectedRow(){
         colorFollowingButtons(selected,0,orderArray[selected],blue)
     }
@@ -383,7 +414,6 @@ class searchingAlgoActivity : AppCompatActivity() {
         buttonIdMap.clear()
     }
     fun makeDropDown(arr:Array<*>,id: Int){
-
         val spinner = findViewById<Spinner>(id)
         val adapter = ArrayAdapter(
             this,
