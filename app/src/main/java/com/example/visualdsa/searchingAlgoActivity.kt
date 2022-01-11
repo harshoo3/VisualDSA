@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.ActionBar.DISPLAY_SHOW_CUSTOM
@@ -14,11 +15,12 @@ import androidx.appcompat.app.ActionBar.LayoutParams
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import java.util.Timer import kotlin.concurrent.schedule
 import androidx.core.content.ContentProviderCompat.requireContext
 import android.widget.TableLayout
 
 import android.widget.TextView
-
+import kotlinx.coroutines.*
 import android.widget.LinearLayout
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
@@ -35,15 +37,27 @@ class searchingAlgoActivity : AppCompatActivity() {
     var orderArray = Array(size, { i -> i * 1 })
     var check:Boolean = false
     var selected:Int = -1
+    var algoRunning: Boolean= false
     var buttonIdMap= mutableMapOf<Int,Int>()
     var speedMap = mutableMapOf<String,Double>()
     val themeColor:Int = Color.parseColor("#FFBB86FC")
     val black:Int = Color.parseColor("#000000")
     val green:Int = Color.parseColor("#00FF00")
+    val red:Int = Color.parseColor("#FF0000")
+    val blue:Int = Color.parseColor("#0000FF")
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x","4x")
     var searchAlgoArr = arrayOf("Linear Search","Binary Search")
     var algoInUse:Int = 0
+
+    var algoFinished:Boolean = false
+    var algoPaused: Boolean = false
     var speedInUSe: Double = 1.0
+    var speed:Long = 1000
+
+//    val slider:Slider = findViewById(R.id.slider)
+//    val button: Button = findViewById(R.id.randomize)
+//    val button2: Button = findViewById(R.id.start)
+
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
 //        speedMap["1x"]= 1
@@ -65,6 +79,10 @@ class searchingAlgoActivity : AppCompatActivity() {
 
 
         val slider = findViewById<Slider>(R.id.slider)
+        val button: Button = findViewById(R.id.randomize)
+        val button2: Button = findViewById(R.id.start)
+        var spinner:Spinner = findViewById(R.id.spinner)
+        var spinner2:Spinner = findViewById(R.id.spinner2)
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 // Responds to when slider's touch event is being started
@@ -75,36 +93,59 @@ class searchingAlgoActivity : AppCompatActivity() {
                 // Responds to when slider's touch event is being stopped
             }
         })
-
         slider.addOnChangeListener { slider, value, fromUser ->
             // Responds to when slider's value is changed
+
             size = value.toInt()
             if(algoInUse==1) sortedSetup()
             else standardSetup()
 //            standardSetup()
         }
 
-        val button: Button = findViewById(R.id.randomize)
+
+
         button.setOnClickListener {
+            if(algoRunning){
+                setUpWithoutShuffling(true)
+                algoFinished = true
+            }
+            else if(algoFinished) Toast.makeText(this,"Please Reset.",Toast.LENGTH_LONG).show()
             // Code here executes on main thread after user presses button
-            if(algoInUse==1) Toast.makeText(this,"Binary Search requires the elements to be sorted.",Toast.LENGTH_LONG).show()
+            else if(algoInUse==1) Toast.makeText(this,"Binary Search requires the elements to be sorted.",Toast.LENGTH_LONG).show()
             else standardSetup()
 //            standardSetup()
         }
-        val button2: Button = findViewById(R.id.start)
+
         button2.setOnClickListener {
             // Code here executes on main thread after user presses button
-            if(check){
-
+            if(algoPaused){
+                algoPaused = false
+                button2.text="Pause"
+            }else if(algoRunning){
+                //pause functionality
+                algoPaused = true
+                button2.text = "Start"
+            }else if(algoFinished){
+                setUpWithoutShuffling(true)
+            }
+            else if(check){
+                button2.text = "Pause"
+                button.text = "Stop"
+                slider.isEnabled = false
+                spinner.isEnabled = false
+                if(algoInUse==1) binarySearch()
+                else linearSearch()
             }else{
                 Toast.makeText(this,"Select an element in the array first.",Toast.LENGTH_LONG).show()
             }
         }
+
         createButtonScreen(size)
-        makeDropDown(searchAlgoArr,R.id.spinner)
-        makeDropDown(speedArr,R.id.spinner2)
+        makeDropDown(searchAlgoArr,spinner.id)
+        makeDropDown(speedArr,spinner2.id)
         standardSetup()
     }
+
 
     fun holdFunctionality(){
         for(i in 0..size-1){
@@ -117,10 +158,13 @@ class searchingAlgoActivity : AppCompatActivity() {
                     }
                     selected = i
                     check = true
-                    colorFollowingButtons(i,0,orderArray[i],green)
+                    colorSelectedRow()
                 }
-
                 btn.setOnLongClickListener {
+                    if(algoRunning){
+                        Toast.makeText(this,"Drag and Drop not allowed while Algorithm is running",Toast.LENGTH_SHORT).show()
+                        return@setOnLongClickListener true
+                    }
                     if(algoInUse==1){
                         Toast.makeText(this,"Drag and Drop not allowed in Binary Search mode",Toast.LENGTH_SHORT).show()
                         return@setOnLongClickListener true
@@ -163,13 +207,13 @@ class searchingAlgoActivity : AppCompatActivity() {
                                     if(selected == buttonIdMap[destination.id]!!){
                                         selected = dragData
                                         println(orderArray[selected])
-                                        colorFollowingButtons(selected,0,orderArray[selected],green)
+                                        colorSelectedRow()
                                     }else{
                                         selected = buttonIdMap[destination.id]!!
-                                        colorFollowingButtons(selected,0,orderArray[selected],green)
+                                        colorSelectedRow()
                                     }
                                 }else{
-                                    colorFollowingButtons(selected,0,orderArray[selected],green)
+                                    colorSelectedRow()
                                 }
                             }else setUpWithoutShuffling()
                             true
@@ -177,7 +221,7 @@ class searchingAlgoActivity : AppCompatActivity() {
                         DragEvent.ACTION_DRAG_ENDED->{
                             if(!dragEvent.result) {
                                 setUpWithoutShuffling(true)
-                                colorFollowingButtons(selected,0,orderArray[selected],green)
+                                colorSelectedRow()
                             }
                             true
                         }
@@ -191,20 +235,69 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
     }
+    fun algoFinishedFunctionality(){
+        val button: Button = findViewById(R.id.randomize)
+        val button2: Button = findViewById(R.id.start)
+        algoRunning = false
+        algoPaused = false
+        algoFinished = true
+        button.text = "Randomise"
+        button2.text = "Reset"
+    }
+    fun resetFunctionality(){
+        val slider:Slider = findViewById(R.id.slider)
+        val button: Button = findViewById(R.id.randomize)
+        val button2: Button = findViewById(R.id.start)
+        var spinner:Spinner = findViewById(R.id.spinner)
+        button.text = "Randomise"
+        algoRunning = false
+        algoPaused = false
+        slider.isEnabled = true
+        algoFinished = false
+        spinner.isEnabled = true
+        button2.text = "Start"
+    }
     fun linearSearch(){
-//        for()
+        algoRunning = true
+        Toast.makeText(this,"$speed",Toast.LENGTH_SHORT).show()
+        GlobalScope.launch {
+            for(i in 0..size-1){
+                while(algoPaused){
+                    delay(100)
+                }
+                if(algoFinished) {
+                    algoFinishedFunctionality()
+                    break
+                }
+                colorFollowingButtons(i,0,orderArray[i],red)
+                delay(speed)
+                if(orderArray[selected]==orderArray[i]) {
+                    colorFollowingButtons(i, 0, orderArray[i], green)
+                    algoFinishedFunctionality()
+                    break
+                }
+            }
+        }
+
     }
     fun binarySearch(){
 
     }
+
+    fun colorSelectedRow(){
+        colorFollowingButtons(selected,0,orderArray[selected],blue)
+    }
     fun standardSetup(){
+        resetFunctionality()
         destroyButtons()
         createButtonScreen(size)
         createShuffledArrays(size)
         colorButtonScreen(size)
         holdFunctionality()
+
     }
     fun setUpWithoutShuffling(keep: Boolean=false){
+        resetFunctionality()
         destroyButtons(keep)
         createButtonScreen(size)
         colorButtonScreen(size)
@@ -317,6 +410,7 @@ class searchingAlgoActivity : AppCompatActivity() {
                     }
                 }else{
                     speedInUSe = speedMap[item]!!
+                    speed= (1000*speedInUSe).toLong()
                 }
             }
 
