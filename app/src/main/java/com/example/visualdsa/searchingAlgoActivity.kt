@@ -29,18 +29,16 @@ import com.google.android.material.slider.Slider
 
 
 class searchingAlgoActivity : AppCompatActivity() {
-//    lateinit var option: Spinner
-//    lateinit var result: TextView
-//    val searchAlgorithmList = resources.getStringArray(R.array.searchAlgorithmList)
+
     var size:Int = 6
     var orderArray = Array(size, { i -> i * 1 })
     var check:Boolean = false
     var selected:Int = -1
     var map1= mutableMapOf<Int,Int>()
-//    var orderArray = Array(5,{1,2,3,4,5})
 
     val themeColor:Int = Color.parseColor("#FFBB86FC")
     val black:Int = Color.parseColor("#000000")
+    val green:Int = Color.parseColor("#00FF00")
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -88,8 +86,6 @@ class searchingAlgoActivity : AppCompatActivity() {
                 Toast.makeText(this,"Select an element in the array first.",Toast.LENGTH_LONG).show()
             }
         }
-
-//        slider.addOnSliderTouchListener(touchListener)
         createButtonScreen(size)
         makeDropDown(arrayOf("Linear Search","Binary Search"),R.id.spinner)
         makeDropDown(arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x"),R.id.spinner2)
@@ -100,17 +96,14 @@ class searchingAlgoActivity : AppCompatActivity() {
         for(i in 0..size-1){
             for(j in 0..orderArray[i]){
                 val btn=buttons[i][j]
-//                btn.setOnTouchListener()
-
                 btn.setOnClickListener {
-                    Toast.makeText(this,"length=${orderArray[i]}",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
                     if(check){
                         colorFollowingButtons(selected,0,orderArray[selected],themeColor)
                     }
                     selected = i
                     check = true
-                    colorFollowingButtons(i,0,orderArray[i],Color.parseColor("#00FF00"))
-//                    return@setOnTouchListener false
+                    colorFollowingButtons(i,0,orderArray[i],green)
                 }
                 btn.setOnLongClickListener {
                     val clipInt="$i"
@@ -123,7 +116,6 @@ class searchingAlgoActivity : AppCompatActivity() {
                     for(k in 0..orderArray[i]){
                         buttons[i][k].visibility = View.INVISIBLE
                     }
-
                     return@setOnLongClickListener true
                 }
                 val dragListener = View.OnDragListener { view, dragEvent ->
@@ -143,30 +135,29 @@ class searchingAlgoActivity : AppCompatActivity() {
                         DragEvent.ACTION_DROP->{
                             val item = dragEvent.clipData.getItemAt(0)
                             val dragData = item.text.toString().toInt()
-
-//                            Toast.makeTex
-//                            view.invalidate()
-//                            println(dragData)
                             val v=dragEvent.localState as View
-                            val owner = v.parent as ViewGroup
-
-//                            owner.removeView(v)
                             val destination = view as Button
+                            map1[destination.id]?.let { swap(dragData, it) }
+                            if(check){
+                                setUpWithoutShuffling(true)
+                                if(selected==map1[destination.id] || selected==dragData){
 
-//
-                            println(map1[destination.id])
-                            map1[destination.id]?.let { swap(dragData, it-1) }
-                            setUpWithoutShuffling()
-//                            println(map1[view.id])
-//                            destination.addView(v)
-                            v.visibility = View.VISIBLE
+                                    if(selected == map1[destination.id]!!){
+                                        selected = dragData
+                                        println(orderArray[selected])
+                                        colorFollowingButtons(selected,0,orderArray[selected],green)
+                                    }else{
+                                        selected = map1[destination.id]!!
+                                        colorFollowingButtons(selected,0,orderArray[selected],green)
+                                    }
+                                }else{
+                                    colorFollowingButtons(selected,0,orderArray[selected],green)
+                                }
+                            }else setUpWithoutShuffling()
+//                            v.visibility = View.VISIBLE
                             true
                         }
                         DragEvent.ACTION_DRAG_ENDED->{
-//                            view.invalidate()
-                            for(k in 0..orderArray[i]){
-                                buttons[i][k].visibility = View.VISIBLE
-                            }
                             true
                         }
                         else->{
@@ -186,8 +177,8 @@ class searchingAlgoActivity : AppCompatActivity() {
         colorButtonScreen(size)
         holdFunctionality()
     }
-    fun setUpWithoutShuffling(){
-        destroyButtons()
+    fun setUpWithoutShuffling(keep: Boolean=false){
+        destroyButtons(keep)
         createButtonScreen(size)
         colorButtonScreen(size)
         holdFunctionality()
@@ -239,7 +230,6 @@ class searchingAlgoActivity : AppCompatActivity() {
             )
             arr.orientation = LinearLayout.HORIZONTAL
             val buttonrow: MutableList<Button> = ArrayList()
-            var startIndex:Int = 1
             for (j in 1..size) {
                 val button = Button(this)
                 button.layoutParams = LinearLayout.LayoutParams(
@@ -250,7 +240,7 @@ class searchingAlgoActivity : AppCompatActivity() {
 //                var buttonid = resources.getIdentifier("b_${i}_${j}", "id", packageName)
 //                println(button.id)
                 button.id=View.generateViewId()
-                map1[button.id] = i
+                map1[button.id] = i-1
                 buttonrow.add(button)
                 arr.addView(button)
 //                println(button.id)
@@ -259,11 +249,14 @@ class searchingAlgoActivity : AppCompatActivity() {
             buttonScreen.addView(arr)
         }
     }
-    fun destroyButtons(){
+    fun destroyButtons(keep: Boolean=false){
         var id = resources.getIdentifier("buttonScreen", "id", packageName)
         val buttonScreen =findViewById<LinearLayout>(id)
         (buttonScreen.getParent() as ViewGroup).removeView(buttonScreen)
         buttons.removeAll(buttons)
+        if(keep){
+            return
+        }
         check = false
         selected=-1
         map1.clear()
