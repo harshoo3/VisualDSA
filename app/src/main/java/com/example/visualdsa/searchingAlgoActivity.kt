@@ -192,7 +192,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         }
     }
     fun linearSearch(){
-
+//        for()
     }
     fun binarySearch(){
 
@@ -311,6 +311,9 @@ class searchingAlgoActivity : AppCompatActivity() {
                     if(item == "Binary Search"){
                         algoInUse = 1
                         sortedSetup()
+                    }else{
+                        algoInUse=0
+                        standardSetup()
                     }
                 }else{
                     speedInUSe = speedMap[item]!!
