@@ -137,6 +137,10 @@ class searchingAlgoActivity : AppCompatActivity() {
                             val dragData = item.text.toString().toInt()
                             val v=dragEvent.localState as View
                             val destination = view as Button
+//                            if(map1[destination.id]== null) {
+//                                println("No dest")
+//                                setUpWithoutShuffling(true)
+//                            }
                             map1[destination.id]?.let { swap(dragData, it) }
                             if(check){
                                 setUpWithoutShuffling(true)
@@ -154,14 +158,17 @@ class searchingAlgoActivity : AppCompatActivity() {
                                     colorFollowingButtons(selected,0,orderArray[selected],green)
                                 }
                             }else setUpWithoutShuffling()
-//                            v.visibility = View.VISIBLE
                             true
                         }
                         DragEvent.ACTION_DRAG_ENDED->{
+                            if(!dragEvent.result) {
+                                setUpWithoutShuffling(true)
+                                colorFollowingButtons(selected,0,orderArray[selected],green)
+                            }
                             true
                         }
                         else->{
-                            setUpWithoutShuffling()
+                            setUpWithoutShuffling(true)
                             false
                         }
                     }
@@ -191,7 +198,6 @@ class searchingAlgoActivity : AppCompatActivity() {
     fun createShuffledArrays(size: Int){
         orderArray = Array(size, { i -> i * 1 })
         orderArray.shuffle()
-
     }
     fun colorButtonScreen(size:Int){
         for(i in 0..size-1){
