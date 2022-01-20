@@ -68,8 +68,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             onItemClick()
-            Toast.makeText(this, "Click on item at $itemAtPos its item id $itemIdAtPos", Toast.LENGTH_LONG).show()
-
         }
         supportActionBar?.apply {
             // show custom title in action bar
@@ -83,8 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun actionBarCustomTitle():TextView{
         return TextView(this).apply {
-            text = "Welcome to VisualDSA" +
-                    ""
+            text = "Welcome to VisualDSA"
 
             val params = ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT,

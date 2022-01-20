@@ -36,8 +36,10 @@
         android:layout_marginTop="16dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="30.0sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="-16dp"></ListView>
+        tools:layout_editor_absoluteX="-16dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

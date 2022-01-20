@@ -37,7 +37,6 @@ class searchingAlgoActivity : AppCompatActivity() {
     var orderArray = Array(size, { i -> i * 1 })
     var check:Boolean = false
     var selected:Int = -1
-
     var buttonIdMap= mutableMapOf<Int,Int>()
     var speedMap = mutableMapOf<String,Double>()
     val themeColor:Int = Color.parseColor("#FFBB86FC")
@@ -45,6 +44,9 @@ class searchingAlgoActivity : AppCompatActivity() {
     val green:Int = Color.parseColor("#00FF00")
     val red:Int = Color.parseColor("#FF0000")
     val blue:Int = Color.parseColor("#0000FF")
+    val yellow:Int = Color.parseColor("#FCF4A3")
+    val brown:Int = Color.parseColor("#8A3324")
+    var colorArray= Array(size) { themeColor }
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x","4x")
     var searchAlgoArr = arrayOf("Linear Search","Binary Search")
     var algoInUse:Int = 0
@@ -61,6 +63,11 @@ class searchingAlgoActivity : AppCompatActivity() {
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
 //        speedMap["1x"]= 1
+        for(i in 0..size-1){
+            println(colorArray[i])
+        }
+        println(themeColor)
+        println("hi")
         for(i in 0..speedArr.size-1){
             speedMap[speedArr[i]]=1/(speedArr[i].subSequence(0,speedArr[i].length-1).toString().toDouble())
             println(speedMap[speedArr[i]])
@@ -122,7 +129,7 @@ class searchingAlgoActivity : AppCompatActivity() {
                 algoPaused = true
                 button2.text = "Resume"
             }else if(algoFinished){
-                setUpWithoutShuffling(true)
+                setUpWithoutShuffling()
             }
             else if(check){
                 button2.text = "Pause"
@@ -143,7 +150,7 @@ class searchingAlgoActivity : AppCompatActivity() {
     }
 
 
-    fun holdFunctionality(){
+    private fun holdFunctionality(){
         for(i in 0..size-1){
             for(j in 0..orderArray[i]){
                 val btn=buttons[i][j]
@@ -156,6 +163,7 @@ class searchingAlgoActivity : AppCompatActivity() {
                         selected = i
                         check = true
                         colorSelectedRow()
+
                     }
                 }
                 btn.setOnLongClickListener {
@@ -197,23 +205,31 @@ class searchingAlgoActivity : AppCompatActivity() {
                             val item = dragEvent.clipData.getItemAt(0)
                             val dragData = item.text.toString().toInt()
                             val destination = view as Button
-                            buttonIdMap[destination.id]?.let { swap(dragData, it) }
-                            if(check){
-                                setUpWithoutShuffling(true)
-                                if(selected==buttonIdMap[destination.id] || selected==dragData){
+//                            try{
+                                buttonIdMap[destination.id]?.let { swap(dragData, it) }
+//                                swap(buttonIdMap[destination.id]!!,dragData);
+                                if(check){
+                                    setUpWithoutShuffling(true)
+                                    if(selected==buttonIdMap[destination.id] || selected==dragData){
 
-                                    if(selected == buttonIdMap[destination.id]!!){
-                                        selected = dragData
-                                        println(orderArray[selected])
-                                        colorSelectedRow()
+                                        if(selected == buttonIdMap[destination.id]!!){
+                                            selected = dragData
+                                            println(orderArray[selected])
+                                            colorSelectedRow()
+                                        }else{
+                                            selected = buttonIdMap[destination.id]!!
+                                            colorSelectedRow()
+                                        }
                                     }else{
-                                        selected = buttonIdMap[destination.id]!!
                                         colorSelectedRow()
                                     }
-                                }else{
-                                    colorSelectedRow()
-                                }
-                            }else setUpWithoutShuffling()
+                                }else setUpWithoutShuffling()
+//                            }catch(e:SomeException){
+//                                setUpWithoutShuffling()
+//                                colorSelectedRow()
+//                            }
+
+
                             true
                         }
                         DragEvent.ACTION_DRAG_ENDED->{
@@ -233,8 +249,17 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
     }
-
-    fun linearSearch(){
+    private fun pauseFunctionality(){
+        GlobalScope.launch {
+            while(algoPaused){
+                if(algoFinished){
+                    break
+                }
+                delay(100)
+            }
+        }
+    }
+    private fun linearSearch(){
         GlobalScope.launch {
             algoRunning = true
             for(i in 0..size-1){
@@ -259,7 +284,22 @@ class searchingAlgoActivity : AppCompatActivity() {
         }
 
     }
-    fun binarySearch(){
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
+//        // If you don't have res/menu, just create a directory named "menu" inside res
+//        menuInflater.inflate(R.menu.search_algo_help, menu)
+//        return super.onCreateOptionsMenu(menu)
+//    }
+//
+//    // handle button activities
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        val id = item.itemId
+//        if (id == R.id.mybutton) {
+//            // do something here
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
+    private fun binarySearch(){
         GlobalScope.launch {
             var left:Int = 0
             var right:Int = size-1
@@ -276,6 +316,13 @@ class searchingAlgoActivity : AppCompatActivity() {
                     break
                 }
                 var mid:Int = left+(right-left)/2
+                var leftColor = colorArray[left]
+                var rightColor = colorArray[right]
+                colorFollowingButtons(left,0,orderArray[left],yellow)
+                colorFollowingButtons(right,0,orderArray[right],brown)
+                delay(speed)
+                colorFollowingButtons(left,0,orderArray[left],leftColor)
+                colorFollowingButtons(right,0,orderArray[right],rightColor)
                 colorFollowingButtons(mid,0,orderArray[mid],red)
                 delay(speed)
                 if(orderArray[mid]==orderArray[selected]){
@@ -291,7 +338,7 @@ class searchingAlgoActivity : AppCompatActivity() {
             }
         }
     }
-    fun algoFinishedFunctionality(){
+    private fun algoFinishedFunctionality(){
         val button: Button = findViewById(R.id.randomize)
         val button2: Button = findViewById(R.id.start)
         algoRunning = false
@@ -300,7 +347,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         button.text = "Randomise"
         button2.text = "Reset"
     }
-    fun resetFunctionality(){
+    private fun resetFunctionality(keep: Boolean = false){
         val slider:Slider = findViewById(R.id.slider)
         val button: Button = findViewById(R.id.randomize)
         val button2: Button = findViewById(R.id.start)
@@ -311,54 +358,60 @@ class searchingAlgoActivity : AppCompatActivity() {
         slider.isEnabled = true
         algoFinished = false
         spinner.isEnabled = true
+        button2.text = "Start"
+        if(keep) return
         selected = -1
         check = false
-        button2.text = "Start"
     }
-    fun colorSelectedRow(){
-        colorFollowingButtons(selected,0,orderArray[selected],blue)
+    private fun colorSelectedRow(){
+        if(check) {
+            colorFollowingButtons(selected, 0, orderArray[selected], blue)
+        }
     }
-    fun standardSetup(){
-        resetFunctionality()
-        destroyButtons()
+    private fun standardSetup(keep:Boolean= false){
+        resetFunctionality(keep)
+        destroyButtons(keep)
         createButtonScreen(size)
         createShuffledArrays(size)
         colorButtonScreen(size)
         holdFunctionality()
-
     }
-    fun setUpWithoutShuffling(keep: Boolean=false){
-        resetFunctionality()
+    private fun setUpWithoutShuffling(keep: Boolean=false){
+        resetFunctionality(keep)
         destroyButtons(keep)
         createButtonScreen(size)
         colorButtonScreen(size)
         holdFunctionality()
     }
-    fun sortedSetup(keep:Boolean = false){
+    private fun sortedSetup(keep:Boolean = false){
+        Toast.makeText(this,"Binary search requires the elements to be sorted.",Toast.LENGTH_LONG).show()
         orderArray = Array(size, { i -> i * 1 })
+        colorArray = Array(size){themeColor}
         setUpWithoutShuffling(keep)
     }
-    fun swap(i1:Int,i2:Int){
+    private fun swap(i1:Int,i2:Int){
         var temp=orderArray[i1]
         orderArray[i1]=orderArray[i2]
         orderArray[i2]=temp
     }
-    fun createShuffledArrays(size: Int){
+    private fun createShuffledArrays(size: Int){
         orderArray = Array(size, { i -> i * 1 })
+        colorArray = Array(size){themeColor}
         orderArray.shuffle()
     }
-    fun colorButtonScreen(size:Int){
+    private fun colorButtonScreen(size:Int){
         for(i in 0..size-1){
             colorFollowingButtons(i,0,orderArray[i],themeColor)
             colorFollowingButtons(i,orderArray[i]+1,size-1,black)
         }
     }
-    fun colorFollowingButtons(row:Int,left:Int, right:Int,color:Int){
+    private fun colorFollowingButtons(row:Int,left:Int, right:Int,color:Int){
         for(j in left..right){
             buttons[row][j].setBackgroundColor(color)
         }
+        if(color!=black) colorArray[row]=color
     }
-    fun createButtonScreen(size: Int) {
+    private fun createButtonScreen(size: Int) {
 
         var layoutid = resources.getIdentifier("col0", "id", packageName)
         val layout=findViewById<LinearLayout>(layoutid)
@@ -401,7 +454,7 @@ class searchingAlgoActivity : AppCompatActivity() {
             buttonScreen.addView(arr)
         }
     }
-    fun destroyButtons(keep: Boolean=false){
+    private fun destroyButtons(keep: Boolean=false){
         var id = resources.getIdentifier("buttonScreen", "id", packageName)
         val buttonScreen =findViewById<LinearLayout>(id)
         (buttonScreen.getParent() as ViewGroup).removeView(buttonScreen)
@@ -413,7 +466,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         selected=-1
         buttonIdMap.clear()
     }
-    fun makeDropDown(arr:Array<*>,id: Int){
+    private fun makeDropDown(arr:Array<*>,id: Int){
         val spinner = findViewById<Spinner>(id)
         val adapter = ArrayAdapter(
             this,
@@ -434,6 +487,7 @@ class searchingAlgoActivity : AppCompatActivity() {
                     if(item == "Binary Search"){
                         algoInUse = 1
                         sortedSetup()
+
                     }else{
                         algoInUse=0
                         standardSetup()
