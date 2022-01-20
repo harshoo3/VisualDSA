@@ -21,7 +21,8 @@ class sortingAlgoActivity : AppCompatActivity() {
     val green:Int = Color.parseColor("#00FF00")
     val red:Int = Color.parseColor("#FF0000")
     val blue:Int = Color.parseColor("#0000FF")
-
+    val yellow:Int = Color.parseColor("#FCF4A3")
+    val brown:Int = Color.parseColor("#8A3324")
     var speedMap = mutableMapOf<String,Double>()
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x","2x","4x","8x")
     var sortAlgoArr = arrayOf("Bubble Sort","Selection Sort","Insertion Sort","Merge Sort","Quick Sort")
@@ -98,6 +99,10 @@ class sortingAlgoActivity : AppCompatActivity() {
                 spinner.isEnabled = false
                 when(algoInUse){
                     0->bubbleSort()
+                    1->selectionSort()
+                    2->insertionSort()
+                    3->mergeSort()
+                    4->quickSort()
                 }
             }
         }
@@ -220,6 +225,113 @@ class sortingAlgoActivity : AppCompatActivity() {
         }
 
     }
+    private fun selectionSort(){
+
+        GlobalScope.launch(Dispatchers.Main) {
+            algoRunning=true
+            var check:Boolean=true
+            for (i in 0..size-1)
+            {
+                // Find the minimum element in unsorted array
+                var minIndex:Int = i
+                colorFollowingButtons(minIndex,0,orderArray[minIndex],yellow)
+                delay(speed)
+                for (j in i+1..size-1){
+                    while(algoPaused){
+                        if(algoFinished){
+                            check=false
+                            break
+                        }
+                        delay(100)
+                    }
+                    if(algoFinished){
+                        check=false
+                        algoFinishedFunctionality()
+                        break
+                    }
+                    colorFollowingButtons(j,0,orderArray[j],blue)
+                    delay(speed)
+                    if (orderArray[j] < orderArray[minIndex]){
+                        colorFollowingButtons(minIndex,0,orderArray[minIndex],red)
+                        minIndex = j
+                        colorFollowingButtons(minIndex,0,orderArray[minIndex],yellow)
+                        delay(speed)
+                    }else{
+                        colorFollowingButtons(j,0,orderArray[j],red)
+                        delay(speed)
+                    }
+                }
+                if(!check) break
+                // Swap the found minimum element with the first element
+                swapDrop(minIndex,i)
+                swapColor(minIndex,i)
+                setUpCurrentScreen(true)
+                delay(speed)
+                for(j in i+1..size-1){
+                    colorFollowingButtons(j,0,orderArray[j],themeColor)
+                }
+                colorFollowingButtons(i,0,orderArray[i],green)
+
+                delay(speed)
+            }
+            algoFinishedFunctionality()
+        }
+
+    }
+    private fun insertionSort(){
+//        GlobalScope.launch(Dispatchers.Main) {
+//            algoRunning=true
+//            var check:Boolean=true
+//
+//            for (i in 1..size-1) {
+//
+//                var key: Int = orderArray[i]
+//                var j: Int = i - 1
+//                colorFollowingButtons(i,0,orderArray[i],yellow)
+//                delay(speed)
+//                while (j >= 0 && orderArray[j] > key) {
+//                    while(algoPaused){
+//                        if(algoFinished){
+//                            check=false
+//                            break
+//                        }
+//                        delay(100)
+//                    }
+//                    if(algoFinished){
+//                        check=false
+//                        algoFinishedFunctionality()
+//                        break
+//                    }
+//                    colorFollowingButtons(j,0,orderArray[j],red)
+//                    delay(speed)
+//                    orderArray[j + 1] = orderArray[j]
+//                    colorFollowingButtons(j+1,0,orderArray[j+1],blue)
+//
+//                    createButtonScreen(size)
+//                    j-=1
+//                }
+//                if(!check) break
+//                orderArray[j + 1] = key
+//                for(k in 0..size-1){
+//                    if(j+1==k){
+//                        colorFollowingButtons(k,0,orderArray[k],green)
+//                    }else{
+//                        colorFollowingButtons(k,0,orderArray[k],themeColor)
+//                    }
+//                }
+//                delay(speed)
+//            }
+//            algoFinishedFunctionality()
+//        }
+    }
+    private fun mergeSort(){
+
+    }
+    private fun quickSort(){
+
+    }
+
+
     private fun algoFinishedFunctionality(){
         val button: Button = findViewById(R.id.randomize_sort)
         val button2: Button = findViewById(R.id.start_sort)
