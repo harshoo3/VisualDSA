@@ -25,8 +25,8 @@ class sortingAlgoActivity : AppCompatActivity() {
     val brown:Int = Color.parseColor("#8A3324")
     var speedMap = mutableMapOf<String,Double>()
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x","2x","4x","8x")
-    var sortAlgoArr = arrayOf("Bubble Sort","Selection Sort","Insertion Sort","Merge Sort","Quick Sort")
-    var algoMap= mutableMapOf<String,Int>("Bubble Sort" to 0,"Selection Sort" to 1,"Insertion Sort" to 2,"Merge Sort" to 3,"Quick Sort" to 4)
+    var sortAlgoArr = arrayOf("Bubble Sort","Selection Sort","Insertion Sort","Merge Sort","Quick Sort","Heap Sort")
+    var algoMap= mutableMapOf<String,Int>("Bubble Sort" to 0,"Selection Sort" to 1,"Insertion Sort" to 2,"Merge Sort" to 3,"Quick Sort" to 4,"Heap Sort" to 5)
     var buttonIdMap= mutableMapOf<Int,Int>()
     var algoInUse:Int = 0
     var algoRunning: Boolean= false
@@ -89,6 +89,10 @@ class sortingAlgoActivity : AppCompatActivity() {
                 algoPaused = true
                 button2.text = "Resume"
             }else if(algoFinished){
+                if(algoInUse==2){
+                    createShuffledArrays(size)
+
+                }
                 resetFunctionality()
                 setUpWithoutShuffling()
             }
@@ -103,6 +107,7 @@ class sortingAlgoActivity : AppCompatActivity() {
                     2->insertionSort()
                     3->mergeSort()
                     4->quickSort()
+                    else-> heapSort()
                 }
             }
         }
@@ -197,7 +202,6 @@ class sortingAlgoActivity : AppCompatActivity() {
                     }
                     if(algoFinished){
                         check=false
-                        algoFinishedFunctionality()
                         break
                     }
                     colorFollowingButtons(j,0,orderArray[j],blue)
@@ -246,7 +250,6 @@ class sortingAlgoActivity : AppCompatActivity() {
                     }
                     if(algoFinished){
                         check=false
-                        algoFinishedFunctionality()
                         break
                     }
                     colorFollowingButtons(j,0,orderArray[j],blue)
@@ -271,7 +274,6 @@ class sortingAlgoActivity : AppCompatActivity() {
                     colorFollowingButtons(j,0,orderArray[j],themeColor)
                 }
                 colorFollowingButtons(i,0,orderArray[i],green)
-
                 delay(speed)
             }
             algoFinishedFunctionality()
@@ -279,55 +281,71 @@ class sortingAlgoActivity : AppCompatActivity() {
 
     }
     private fun insertionSort(){
-//        GlobalScope.launch(Dispatchers.Main) {
-//            algoRunning=true
-//            var check:Boolean=true
-//
-//            for (i in 1..size-1) {
-//
-//                var key: Int = orderArray[i]
-//                var j: Int = i - 1
-//                colorFollowingButtons(i,0,orderArray[i],yellow)
+        GlobalScope.launch(Dispatchers.Main) {
+            algoRunning=true
+            var check:Boolean=true
+            for (i in 1..size-1) {
+                var key: Int = orderArray[i]
+                Toast.makeText(this@sortingAlgoActivity,"Key = ${key+1}",Toast.LENGTH_SHORT).show()
+                var j: Int = i - 1
+                colorFollowingButtons(i,0,orderArray[i],yellow)
+                delay(speed)
+                while (j >= 0 && orderArray[j] > key) {
+                    while(algoPaused){
+                        if(algoFinished){
+                            check=false
+                            break
+                        }
+                        delay(100)
+                    }
+                    if(algoFinished){
+                        check=false
+                        createButtonScreen(size)
+                        break
+                    }
+                    colorFollowingButtons(j,0,orderArray[j],red)
+                    delay(speed)
+                    orderArray[j + 1] = orderArray[j]
+                    colorFollowingButtons(j+1,0,orderArray[j+1],blue)
+                    colorFollowingButtons(j+1,orderArray[j+1]+1,size-1,black)
+                    createButtonScreen(size)
+                    delay(speed)
+                    j-=1
+                }
+                orderArray[j + 1] = key
+                if(!check) {
+                    createShuffledArrays(size)
+                    break
+                }
+                for(k in 0..i){
+                    if(orderArray[k]==k || k==j+1){
+                        colorFollowingButtons(k,0,orderArray[k],green)
+                        colorFollowingButtons(k,orderArray[k]+1,size-1,black)
+                        delay(speed)
+                    }
+                    if(orderArray[k]!=k){
+                        colorFollowingButtons(k,0,orderArray[k],themeColor)
+                        colorFollowingButtons(k,orderArray[k]+1,size-1,black)
+//                        delay(speed)
+                    }
+                }
 //                delay(speed)
-//                while (j >= 0 && orderArray[j] > key) {
-//                    while(algoPaused){
-//                        if(algoFinished){
-//                            check=false
-//                            break
-//                        }
-//                        delay(100)
-//                    }
-//                    if(algoFinished){
-//                        check=false
-//                        algoFinishedFunctionality()
-//                        break
-//                    }
-//                    colorFollowingButtons(j,0,orderArray[j],red)
-//                    delay(speed)
-//                    orderArray[j + 1] = orderArray[j]
-//                    colorFollowingButtons(j+1,0,orderArray[j+1],blue)
-//
-//                    createButtonScreen(size)
-//                    j-=1
-//                }
-//                if(!check) break
-//                orderArray[j + 1] = key
-//                for(k in 0..size-1){
-//                    if(j+1==k){
-//                        colorFollowingButtons(k,0,orderArray[k],green)
-//                    }else{
-//                        colorFollowingButtons(k,0,orderArray[k],themeColor)
-//                    }
-//                }
-//                delay(speed)
-//            }
-//            algoFinishedFunctionality()
-//        }
+            }
+            algoFinishedFunctionality()
+//            destroyButtons()
+//            createButtonScreen(size)
+//            createShuffledArrays(size)
+//            colorButtonScreen(size)
+//            holdFunctionality()
+        }
     }
     private fun mergeSort(){
 
     }
     private fun quickSort(){
+
+    }
+    private fun heapSort(){
 
     }
 
