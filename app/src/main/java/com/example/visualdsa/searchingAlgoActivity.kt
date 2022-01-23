@@ -107,7 +107,7 @@ class searchingAlgoActivity : AppCompatActivity() {
             else standardSetup()
 //            standardSetup()
         }
-
+        button.textSize = 16F
         button.setOnClickListener {
             if(algoRunning){
                 algoFinished = true
@@ -118,15 +118,18 @@ class searchingAlgoActivity : AppCompatActivity() {
             else standardSetup()
 //            standardSetup()
         }
-
+        button2.textSize = 16F
+        button2.setBackgroundColor(green)
         button2.setOnClickListener {
             // Code here executes on main thread after user presses button
             if(algoPaused){
                 algoPaused = false
+                button2.setBackgroundColor(themeColor)
                 button2.text="Pause"
             }else if(algoRunning){
                 //pause functionality
                 algoPaused = true
+                button2.setBackgroundColor(green)
                 button2.text = "Resume"
             }else if(algoFinished){
                 setUpWithoutShuffling()
@@ -136,6 +139,8 @@ class searchingAlgoActivity : AppCompatActivity() {
                 button.text = "Stop"
                 slider.isEnabled = false
                 spinner.isEnabled = false
+                button2.setBackgroundColor(themeColor)
+                button.setBackgroundColor(red)
                 if(algoInUse==1) binarySearch()
                 else linearSearch()
             }else{
@@ -346,6 +351,8 @@ class searchingAlgoActivity : AppCompatActivity() {
         algoFinished = true
         button.text = "Randomise"
         button2.text = "Reset"
+        button.setBackgroundColor(themeColor)
+        button2.setBackgroundColor(themeColor)
     }
     private fun resetFunctionality(keep: Boolean = false){
         val slider:Slider = findViewById(R.id.slider)
@@ -358,6 +365,8 @@ class searchingAlgoActivity : AppCompatActivity() {
         slider.isEnabled = true
         algoFinished = false
         spinner.isEnabled = true
+        button.setBackgroundColor(themeColor)
+        button2.setBackgroundColor(green)
         button2.text = "Start"
         if(keep) return
         selected = -1

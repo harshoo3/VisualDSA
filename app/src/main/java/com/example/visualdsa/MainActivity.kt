@@ -22,17 +22,18 @@ import androidx.recyclerview.widget.ListAdapter
 
 
 class MainActivity : AppCompatActivity() {
-    val topic = arrayOf<String>("Searching", "Sorting", "Graph Algorithms",
+    val topic = arrayOf<String>("Searching", "Sorting", "Maze Runner", "Graph Algorithms",
         "Tree Algorithms")
     val description = arrayOf<String>(
         "C programming is considered as the base for other programming languages",
         "C++ is an object-oriented programming language.",
+        ".NET is a framework which is used to develop software applications.",
         "Java is a programming language and a platform.",
         ".NET is a framework which is used to develop software applications."
     )
     val imageId = arrayOf<Int>(
-        R.drawable.android_logo,R.drawable.search,R.drawable.graph1,
-        R.drawable.tree
+        R.drawable.android_logo,R.drawable.search,R.drawable.graph1,R.drawable.graph1,
+        R.drawable.tree,
     )
     lateinit var listView : ListView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +59,14 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent);
                     }
                     2 -> {
-                        val intent = Intent(this, graphAlgoActivity::class.java);
+                        val intent = Intent(this, mazeActivity::class.java);
                         startActivity(intent);
                     }
                     3 -> {
+                        val intent = Intent(this, graphAlgoActivity::class.java);
+                        startActivity(intent);
+                    }
+                    4 -> {
                         val intent = Intent(this, treeAlgoActivity::class.java);
                         startActivity(intent);
                     }

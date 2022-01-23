@@ -3,9 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1796875" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/drawable/layout_bg.xml" value="0.19947916666666668" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_graph_algo.xml" value="0.19479166666666667" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_main.xml" value="0.144" />
+        <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_maze.xml" value="0.25" />
+        <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_maze_actitvity.xml" value="0.146875" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_my_list_adapter.xml" value="0.125" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_searching_algo.xml" value="0.10400000000000001" />
         <entry key="..\:/Users/harsh/AndroidStudioProjects/VisualDSA/app/src/main/res/layout/activity_sorting_algo.xml" value="0.19375" />

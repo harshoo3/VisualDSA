@@ -69,6 +69,7 @@ class sortingAlgoActivity : AppCompatActivity() {
 //            if(algoInUse==1) sortedSetup()
 //            else
         }
+        button.textSize = 16F
         button.setOnClickListener {
             if(algoRunning){
                 algoFinished = true
@@ -79,19 +80,22 @@ class sortingAlgoActivity : AppCompatActivity() {
 //                Toast.LENGTH_LONG).show()
             else standardSetup()
         }
+        button2.textSize = 16F
+        button2.setBackgroundColor(green)
         button2.setOnClickListener {
             // Code here executes on main thread after user presses button
             if(algoPaused){
                 algoPaused = false
+                button2.setBackgroundColor(themeColor)
                 button2.text="Pause"
             }else if(algoRunning){
                 //pause functionality
                 algoPaused = true
+                button2.setBackgroundColor(green)
                 button2.text = "Resume"
             }else if(algoFinished){
                 if(algoInUse==2){
                     createShuffledArrays(size)
-
                 }
                 resetFunctionality()
                 setUpWithoutShuffling()
@@ -101,6 +105,8 @@ class sortingAlgoActivity : AppCompatActivity() {
                 button.text = "Stop"
                 slider.isEnabled = false
                 spinner.isEnabled = false
+                button2.setBackgroundColor(themeColor)
+                button.setBackgroundColor(red)
                 when(algoInUse){
                     0->bubbleSort()
                     1->selectionSort()
@@ -285,6 +291,18 @@ class sortingAlgoActivity : AppCompatActivity() {
             algoRunning=true
             var check:Boolean=true
             for (i in 1..size-1) {
+                while(algoPaused){
+                    if(algoFinished){
+                        check=false
+                        break
+                    }
+                    delay(100)
+                }
+                if(algoFinished){
+                    check=false
+                    createButtonScreen(size)
+                    break
+                }
                 var key: Int = orderArray[i]
                 Toast.makeText(this@sortingAlgoActivity,"Key = ${key+1}",Toast.LENGTH_SHORT).show()
                 var j: Int = i - 1
@@ -358,6 +376,8 @@ class sortingAlgoActivity : AppCompatActivity() {
         algoFinished = true
         button.text = "Randomise"
         button2.text = "Reset"
+        button.setBackgroundColor(themeColor)
+        button2.setBackgroundColor(themeColor)
     }
     private fun resetFunctionality(){
         val slider:Slider = findViewById(R.id.slider_sort)
@@ -371,6 +391,8 @@ class sortingAlgoActivity : AppCompatActivity() {
         algoFinished = false
         spinner.isEnabled = true
         button2.text = "Start"
+        button.setBackgroundColor(themeColor)
+        button2.setBackgroundColor(green)
     }
     private fun standardSetup(keep:Boolean=false){
         resetFunctionality()

@@ -9,10 +9,10 @@
 
     <LinearLayout
         android:id="@+id/col0"
-        android:layout_width="294dp"
-        android:layout_height="461dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="58dp"
+        android:layout_width="294sp"
+        android:layout_height="461sp"
+        android:layout_marginStart="12sp"
+        android:layout_marginBottom="58sp"
         android:layout_weight="1"
 
         android:baselineAligned="false"
@@ -23,13 +23,13 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="205dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="30dp"
+        android:layout_width="205sp"
+        android:layout_height="46sp"
+        android:layout_marginStart="30sp"
 
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="100dp"
-        android:minHeight="48dp"
+        android:layout_marginTop="28sp"
+        android:layout_marginEnd="100sp"
+        android:minHeight="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,30 +38,30 @@
 
     <Button
         android:id="@+id/randomize"
-        android:layout_width="169dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="36dp"
+        android:layout_width="169sp"
+        android:layout_height="62sp"
+        android:layout_marginStart="16sp"
+        android:layout_marginBottom="36sp"
         android:text="@string/randomize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/start"
-        android:layout_width="182dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="36dp"
+        android:layout_width="182sp"
+        android:layout_height="64sp"
+        android:layout_marginEnd="16sp"
+        android:layout_marginBottom="36sp"
         android:text="@string/start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/slider"
-        android:layout_width="340dp"
-        android:layout_height="144dp"
-        android:layout_marginStart="184dp"
-        android:layout_marginTop="216dp"
+        android:layout_width="340sp"
+        android:layout_height="144sp"
+        android:layout_marginStart="184sp"
+        android:layout_marginTop="216sp"
         android:contentDescription="@string/slider"
         android:rotation="270"
         android:stepSize="1"
@@ -76,8 +76,8 @@
         android:id="@+id/textView40"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="125dp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginBottom="125sp"
         android:text="@string/size"
         android:textColor="@color/purple_200"
         android:textSize="24sp"
@@ -87,10 +87,10 @@
 
     <Spinner
         android:id="@+id/spinner2"
-        android:layout_width="134dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="20dp"
+        android:layout_width="134sp"
+        android:layout_height="47sp"
+        android:layout_marginTop="28sp"
+        android:layout_marginEnd="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
