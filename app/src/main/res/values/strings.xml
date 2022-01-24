@@ -19,6 +19,7 @@
     <string name="slider">slider</string>
     <string name="hello">hello</string>
     <string name="clear">clear</string>
+    <string name="select">select</string>
     <string-array name="searchAlgorithmList">
         <item>Linear Search</item>
         <item>Binary Search</item>

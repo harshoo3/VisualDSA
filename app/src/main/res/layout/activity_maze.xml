@@ -9,8 +9,8 @@
 
     <LinearLayout
         android:id="@+id/col2"
-        android:layout_width="302dp"
-        android:layout_height="516dp"
+        android:layout_width="305dp"
+        android:layout_height="505dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="100dp"
 
@@ -21,35 +21,49 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+
     <Button
         android:id="@+id/randomize_maze"
-        android:layout_width="128dp"
+        android:layout_width="145dp"
         android:layout_height="62dp"
-        android:layout_marginStart="16sp"
-        android:layout_marginBottom="36sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="28dp"
         android:text="@string/randomize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/clear_maze"
-        android:layout_width="103dp"
+    <LinearLayout
+        android:id="@+id/my_button"
+        android:layout_width="62dp"
         android:layout_height="61dp"
-        android:layout_marginEnd="136dp"
-        android:layout_marginBottom="36dp"
-        android:text="@string/clear"
+        android:layout_marginEnd="158dp"
+        android:layout_marginBottom="28dp"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/clear_maze"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:textAlignment="center"
+            app:icon="@android:drawable/ic_menu_delete" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/start_maze"
-        android:layout_width="110dp"
-        android:layout_height="58dp"
-        android:layout_marginEnd="16sp"
-        android:layout_marginBottom="36sp"
-        android:text="@string/start"
+        android:layout_width="121dp"
+        android:layout_height="61dp"
+        android:layout_marginEnd="28dp"
+
+        android:layout_marginBottom="28dp"
+        android:text="@string/select"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/textView400"
         android:layout_width="wrap_content"

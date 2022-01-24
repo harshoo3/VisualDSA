@@ -1,6 +1,7 @@
 package com.example.visualdsa
 
 import android.graphics.Color
+import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,7 +12,10 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.view.MotionEvent
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
+import kotlinx.android.synthetic.main.list_item.*
+import kotlinx.android.synthetic.main.list_item.view.*
 
 
 class mazeActivity : AppCompatActivity() {
@@ -28,6 +32,7 @@ class mazeActivity : AppCompatActivity() {
     var buttonIdMap= mutableMapOf<Int,Int>()
     var searchAlgoArr = arrayOf("BFS","DFS", "Dijkstra")
     var algoInUse:Int = 0
+    var algoMap= mutableMapOf<String,Int>("BFS" to 0,"DFS" to 1,"Dijkstra" to 2)
     var algoRunning: Boolean= false
     var algoFinished:Boolean = false
     var algoPaused: Boolean = false
@@ -36,8 +41,11 @@ class mazeActivity : AppCompatActivity() {
     var size:Int = 6
     var n:Int = 4
     private var colorArray= Array(size) { IntArray(n) }
+    private var ogColorArray= Array(size) { IntArray(n) }
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
-
+    var startSelected:Boolean = false
+    var endSelected:Boolean = false
+    var selectPressed:Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maze)
@@ -69,7 +77,7 @@ class mazeActivity : AppCompatActivity() {
 //            if(algoInUse==1) sortedSetup()
             standardSetup(size,n)
         }
-
+        button.textSize = 16F
         button.setOnClickListener {
             if(algoRunning){
                 algoFinished = true
@@ -79,6 +87,41 @@ class mazeActivity : AppCompatActivity() {
             else{
                 randomize(size,n)
 //                randomize(size,n,true)
+            }
+        }
+        button2.textSize = 16F
+        button2.setBackgroundColor(green)
+        button2.setOnClickListener {
+            // Code here executes on main thread after user presses button
+            if(algoPaused){
+                algoPaused = false
+                button2.setBackgroundColor(themeColor)
+                button2.text="Pause"
+            }else if(algoRunning){
+                //pause functionality
+                algoPaused = true
+                button2.setBackgroundColor(green)
+                button2.text = "Resume"
+            }else if(algoFinished){
+                setUpWithoutShuffling(size,n)
+            }
+            else if(startSelected && endSelected){
+                button2.text = "Pause"
+                button.text = "Stop"
+                slider.isEnabled = false
+                spinner.isEnabled = false
+                button2.setBackgroundColor(themeColor)
+                button.setBackgroundColor(red)
+                when(algoInUse){
+                    0->bfs()
+                    1->dfs()
+                    2->dijkstra()
+                }
+            }else if(selectPressed){
+                Toast.makeText(this,"Select Start and End points first.",Toast.LENGTH_LONG).show()
+            }else{
+                selectPressed = true
+                button2.text = "start"
             }
         }
         button3.setOnClickListener {
@@ -98,16 +141,37 @@ class mazeActivity : AppCompatActivity() {
         createButtonScreen(size,n)
         standardSetup(size,n)
     }
-    private fun toggleColorsOnTouch(size: Int,n: Int){
+    private fun bfs(){}
+    private fun dfs(){}
+    private fun dijkstra(){}
+    private fun buttonfunctionality(size: Int,n: Int){
+        for(i in 0..size-1){
+            for(j in 0..n-1){
+                val btn=buttons[i][j]
+//                var touchCheck:Boolean = false
+                if(algoRunning || algoFinished) return
+                btn.setOnClickListener {
+                    if(!selectPressed) toggleColorButton(i,j,brown)
+                    else if(!startSelected){
+                        btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24,0,0,0)
+                        startSelected=true
+                    }else if(!endSelected){
+                        btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_always_landscape_portrait,0,0,0)
+                        endSelected=true
+                    }
+                }
+            }
+        }
+    }
+    private fun selectStartPoint(size:Int, n:Int){
         for(i in 0..size-1){
             for(j in 0..n-1){
                 val btn=buttons[i][j]
 //                var touchCheck:Boolean = false
                 if(btn.hasFocus()) println("$i,$j")
                 btn.setOnClickListener {
-                    colorButton(i,j)
+                    toggleColorButton(i,j,brown)
                 }
-
             }
         }
     }
@@ -123,24 +187,34 @@ class mazeActivity : AppCompatActivity() {
             temp2.shuffle()
             var rand2:Int = (tempL..tempR).random()
             for(j in 0..rand2-1){
-                if(invert)  colorButton(temp1[j]-1,temp2[i]-1)
-                else colorButton(temp1[i]-1,temp2[j]-1)
+                if(invert)  toggleColorButton(temp1[j]-1,temp2[i]-1,brown)
+                else toggleColorButton(temp1[i]-1,temp2[j]-1,brown)
             }
         }
     }
-    private fun colorButton(i:Int,j:Int){
+    private fun toggleColorButton(i:Int,j:Int,color:Int){
         var setCol:Int =white
         if(colorArray[i][j]==white){
-            setCol = brown
+            setCol = color
         }
         colorFollowingButtons(i,j,j,setCol)
+    }
+    private fun colorButton(i:Int,j:Int,color:Int){
+        colorFollowingButtons(i,j,j,color)
     }
     private fun standardSetup(size: Int,n:Int){
 //        resetFunctionality(keep)
         destroyButtons()
         createButtonScreen(size,n)
         colorButtonScreen(size,n)
-        toggleColorsOnTouch(size,n)
+        buttonfunctionality(size,n)
+    }
+    private fun setUpWithoutShuffling(size: Int,n:Int){
+//        resetFunctionality(keep)
+        destroyButtons()
+        createButtonScreen(size,n)
+        colorCurrentButtonScreen(size,n)
+        buttonfunctionality(size,n)
     }
     private fun createButtonScreen(size: Int,n:Int) {
 
@@ -205,6 +279,13 @@ class mazeActivity : AppCompatActivity() {
             colorFollowingButtons(i,0,n-1,white)
         }
     }
+    private fun colorCurrentButtonScreen(size:Int,n:Int){
+        for(i in 0..size-1){
+            for(j in 0..n-1){
+                colorFollowingButtons(i,j,j,ogColorArray[i][j])
+            }
+        }
+    }
 
     private fun colorFollowingButtons(row:Int, left:Int, right:Int, color:Int){
         val gd1 = GradientDrawable()
@@ -237,14 +318,7 @@ class mazeActivity : AppCompatActivity() {
                 // Do what you want
                 val item = spinner.selectedItem.toString()
                 if(id == R.id.spinner_maze1){
-//                    if(item == "Binary Search"){
-//                        algoInUse = 1
-//                        sortedSetup()
-//
-//                    }else{
-//                        algoInUse=0
-//                        standardSetup()
-//                    }
+                    algoInUse= algoMap[item]!!
                 }else{
                     speedInUSe = speedMap[item]!!
                     speed= (1000*speedInUSe).toLong()

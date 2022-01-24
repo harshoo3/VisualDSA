@@ -11,6 +11,7 @@ android {
         configurations.all {
             resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
         }
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.example.visualdsa"
         minSdk 24
         targetSdk 31
