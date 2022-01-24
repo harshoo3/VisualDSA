@@ -44,6 +44,9 @@ class mazeActivity : AppCompatActivity() {
         for(i in 0..speedArr.size-1){
             speedMap[speedArr[i]]=1/(speedArr[i].subSequence(0,speedArr[i].length-1).toString().toDouble())
         }
+        val button: Button = findViewById(R.id.randomize_maze)
+        val button2: Button = findViewById(R.id.start_maze)
+        val button3: Button = findViewById(R.id.clear_maze)
         var spinner: Spinner = findViewById(R.id.spinner_maze1)
         var spinner2: Spinner = findViewById(R.id.spinner_maze2)
         val slider = findViewById<Slider>(R.id.slider_maze)
@@ -67,17 +70,29 @@ class mazeActivity : AppCompatActivity() {
             standardSetup(size,n)
         }
 
-//        button.setOnClickListener {
+        button.setOnClickListener {
+            if(algoRunning){
+                algoFinished = true
+            }
+            else if(algoFinished) Toast.makeText(this,"Please Reset.", Toast.LENGTH_LONG).show()
+            // Code here executes on main thread after user presses button
+            else{
+                randomize(size,n)
+//                randomize(size,n,true)
+            }
+        }
+        button3.setOnClickListener {
 //            if(algoRunning){
 //                algoFinished = true
 //            }
 //            else if(algoFinished) Toast.makeText(this,"Please Reset.", Toast.LENGTH_LONG).show()
 //            // Code here executes on main thread after user presses button
-//            else if(algoInUse==1) Toast.makeText(this,"Binary Search requires the elements to be sorted.",
-//                Toast.LENGTH_LONG).show()
-//            else standardSetup()
-////            standardSetup()
-//        }
+//            else{
+//                randomize(size,n)
+////                randomize(size,n,true)
+//            }
+            colorButtonScreen(size,n)
+        }
         makeDropDown(searchAlgoArr,spinner.id)
         makeDropDown(speedArr,spinner2.id)
         createButtonScreen(size,n)
@@ -87,71 +102,29 @@ class mazeActivity : AppCompatActivity() {
         for(i in 0..size-1){
             for(j in 0..n-1){
                 val btn=buttons[i][j]
-                var touchCheck:Boolean = false
+//                var touchCheck:Boolean = false
                 if(btn.hasFocus()) println("$i,$j")
-//                btn.setOnClickListener {
-//                    var setCol:Int =white
-//
-////                    Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
-//                    if(colorArray[i][j]==white){
-//                        setCol = green
-//                    }
-//                    colorFollowingButtons(i,j,j,setCol)
-//                }
-//                btn.setOnTouchListener(object : View.OnTouchListener {
-//                    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-//                        when (event?.action) {
-//                            MotionEvent.ACTION_DOWN-> {
-//                                if(touchCheck) return false
-//                                touchCheck = true
-//                                colorButton(i,j)
-//                            }
-//                            MotionEvent.ACTION_MOVE-> {
-//                                if (touchCheck) return false
-//                                touchCheck = true
-//                                colorButton(i,j)
-//                            }
-//                            else->return false
-//
-//                        }
-//
-//                        return true
-//                    }
-//                })
-                btn.setOnHoverListener(object : View.OnHoverListener {
-                    override fun onHover(v: View?, event: MotionEvent?): Boolean {
-                        when (event?.action) {
-                            MotionEvent.ACTION_DOWN-> {
-                                if(touchCheck) return false
-                                touchCheck = true
-                                colorButton(i,j)
-                            }
-                            MotionEvent.ACTION_HOVER_ENTER-> {
-//                                if (touchCheck) return false
-                                touchCheck = true
-                                colorButton(i,j)
-                            }
-                            else->return false
-
-                        }
-
-                        return true
-                    }
-                })
-                btn.setOnFocusChangeListener { p0, p1 ->
-                    println("$i,$j")
-                    if(p1){
-                        colorButton(i, j)
-                    }
+                btn.setOnClickListener {
+                    colorButton(i,j)
                 }
 
-//                btn.setOnTouchListener(View.OnTouchListener(){
-//                    @Override
-//                    fun onTouch(View v, MotionEvent event):Boolean{
-//                        return true
-//                    }
-//                })
-
+            }
+        }
+    }
+    private fun randomize(size: Int,n:Int,invert:Boolean=false){
+        colorButtonScreen(size,n)
+        var temp1 = Array(size){i->i+1}
+        temp1.shuffle()
+        var rand1:Int = (((size/2)-1)..(2*size/3)-1).random()
+        var tempL:Int = (n/2)-1
+        var tempR:Int = ((2*n)/3)-1
+        for(i in 0..rand1-1){
+            var temp2 = Array(n){i->i+1}
+            temp2.shuffle()
+            var rand2:Int = (tempL..tempR).random()
+            for(j in 0..rand2-1){
+                if(invert)  colorButton(temp1[j]-1,temp2[i]-1)
+                else colorButton(temp1[i]-1,temp2[j]-1)
             }
         }
     }

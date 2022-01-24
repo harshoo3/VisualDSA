@@ -131,6 +131,10 @@ class sortingAlgoActivity : AppCompatActivity() {
                     Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
                 }
                 btn.setOnLongClickListener {
+                    if(algoFinished){
+                        Toast.makeText(this,"Please reset.",Toast.LENGTH_SHORT).show()
+                        return@setOnLongClickListener true
+                    }
                     if(algoRunning){
                         Toast.makeText(this,"Drag and Drop not allowed while Algorithm is running",Toast.LENGTH_SHORT).show()
                         return@setOnLongClickListener true
