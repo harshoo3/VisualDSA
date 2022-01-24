@@ -22,13 +22,12 @@ import android.widget.TableLayout
 import android.widget.TextView
 import kotlinx.coroutines.*
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import java.lang.Exception
 import com.google.android.material.slider.Slider
-
-
-
+import kotlinx.android.synthetic.main.activity_searching_algo.*
 
 
 class searchingAlgoActivity : AppCompatActivity() {
@@ -55,7 +54,7 @@ class searchingAlgoActivity : AppCompatActivity() {
     var algoPaused: Boolean = false
     var speedInUSe: Double = 1.0
     var speed:Long = 1000
-
+    var notesArr = arrayOf("Note: You can customize the order of elements by dragging one element to another.", "Note: You can increase or decrease the execution speed using the above dropdown.","Note: You can press the ? icon above to know which color denotes what.")
 //    val slider:Slider = findViewById(R.id.slider)
 //    val button: Button = findViewById(R.id.randomize)
 //    val button2: Button = findViewById(R.id.start)
@@ -89,6 +88,10 @@ class searchingAlgoActivity : AppCompatActivity() {
         val button2: Button = findViewById(R.id.start)
         var spinner:Spinner = findViewById(R.id.spinner)
         var spinner2:Spinner = findViewById(R.id.spinner2)
+        val round_legend: Button = findViewById(R.id.round_legend)
+        val notes:TextView = findViewById(R.id.notes_search)
+
+        notes.setText(notesArr[(0..notesArr.size-1).random()])
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 // Responds to when slider's touch event is being started
@@ -147,14 +150,57 @@ class searchingAlgoActivity : AppCompatActivity() {
                 Toast.makeText(this,"Select an element in the array first.",Toast.LENGTH_LONG).show()
             }
         }
-
+        round_legend.setOnClickListener{
+            makeAlertDialog()
+        }
         createButtonScreen(size)
         makeDropDown(searchAlgoArr,spinner.id)
         makeDropDown(speedArr,spinner2.id)
         standardSetup()
     }
 
-
+    private fun makeAlertDialog(){
+//        var layoutid = resources.getIdentifier("search_legend", "id", packageName)
+//        val layout=findViewById<LinearLayout>(R.id.search_legend)
+//
+//        for (i in 1..3) {
+//            val arr = LinearLayout(this)
+//            arr.layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT,1.0f
+//            )
+//            arr.orientation = LinearLayout.HORIZONTAL
+//            arr.setPadding(0,0,0,10)
+//            var textv:TextView = TextView(this)
+//            textv.layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                1.0f
+//            )
+//            textv.setText("hi${i}")
+//            arr.addView(textv)
+//            layout.addView(arr)
+//        }
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this@searchingAlgoActivity)
+        var customLayout = getLayoutInflater()
+            .inflate(
+                R.layout.search_legend,
+                null);
+        alertDialog.setView(customLayout)
+        alertDialog.setTitle("Legend")
+//        alertDialog.
+//        alertDialog.setPositiveButton(
+//            "yes"
+//        ) { _, _ ->
+//            Toast.makeText(this@MainActivity, "Alert dialog closed.", Toast.LENGTH_LONG).show()
+//        }
+//        alertDialog.setNegativeButton(
+//            "No"
+//        ) { _, _ -> }
+        val alert: AlertDialog = alertDialog.create()
+        alert.setCanceledOnTouchOutside(true)
+        alert.show()
+    }
     private fun holdFunctionality(){
         for(i in 0..size-1){
             for(j in 0..orderArray[i]){
@@ -229,12 +275,6 @@ class searchingAlgoActivity : AppCompatActivity() {
                                         colorSelectedRow()
                                     }
                                 }else setUpWithoutShuffling()
-//                            }catch(e:SomeException){
-//                                setUpWithoutShuffling()
-//                                colorSelectedRow()
-//                            }
-
-
                             true
                         }
                         DragEvent.ACTION_DRAG_ENDED->{
@@ -304,6 +344,7 @@ class searchingAlgoActivity : AppCompatActivity() {
 //        }
 //        return super.onOptionsItemSelected(item)
 //    }
+
     private fun binarySearch(){
         GlobalScope.launch {
             var left:Int = 0

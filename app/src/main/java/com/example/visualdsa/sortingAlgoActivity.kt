@@ -37,6 +37,7 @@ class sortingAlgoActivity : AppCompatActivity() {
     var size:Int = 6
     var colorArray= Array(size) { themeColor }
     var orderArray = Array(size, { i -> i * 1 })
+    var notesArr = arrayOf("Note: You can customize the order of elements by dragging one element to another.", "Note: You can increase or decrease the execution speed using the above dropdown.","Note: You can press the ? icon above to know which color denotes what.")
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,9 @@ class sortingAlgoActivity : AppCompatActivity() {
         val button2: Button = findViewById(R.id.start_sort)
         var spinner: Spinner = findViewById(R.id.spinner_sort1)
         var spinner2: Spinner = findViewById(R.id.spinner_sort2)
+        val notes:TextView = findViewById(R.id.notes_sort)
+
+        notes.setText(notesArr[(0..notesArr.size-1).random()])
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 // Responds to when slider's touch event is being started
@@ -94,9 +98,6 @@ class sortingAlgoActivity : AppCompatActivity() {
                 button2.setBackgroundColor(green)
                 button2.text = "Resume"
             }else if(algoFinished){
-                if(algoInUse==2){
-                    createShuffledArrays(size)
-                }
                 resetFunctionality()
                 setUpWithoutShuffling()
             }
@@ -299,8 +300,8 @@ class sortingAlgoActivity : AppCompatActivity() {
                     delay(100)
                 }
                 if(algoFinished){
-                    check=false
-                    createButtonScreen(size)
+//                    check=false
+//                    createButtonScreen(size)
                     break
                 }
                 var key: Int = orderArray[i]
@@ -318,15 +319,17 @@ class sortingAlgoActivity : AppCompatActivity() {
                     }
                     if(algoFinished){
                         check=false
-                        createButtonScreen(size)
+//                        createButtonScreen(size)
                         break
                     }
                     colorFollowingButtons(j,0,orderArray[j],red)
                     delay(speed)
                     orderArray[j + 1] = orderArray[j]
+//                    setUpCurrentScreen(true)
                     colorFollowingButtons(j+1,0,orderArray[j+1],blue)
                     colorFollowingButtons(j+1,orderArray[j+1]+1,size-1,black)
-                    createButtonScreen(size)
+//                    createButtonScreen(size)
+                    setUpCurrentScreen(true)
                     delay(speed)
                     j-=1
                 }
@@ -426,6 +429,7 @@ class sortingAlgoActivity : AppCompatActivity() {
         colorArray[i2]=temp
     }
     private fun createShuffledArrays(size: Int){
+
         orderArray = Array(size) { i -> i * 1 }
         colorArray = Array(size){themeColor}
         orderArray.shuffle()

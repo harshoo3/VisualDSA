@@ -9,6 +9,7 @@ import android.widget.*
 import com.google.android.material.slider.Slider
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.view.MotionEvent
 import androidx.annotation.RequiresApi
 import androidx.core.view.marginStart
 
@@ -86,17 +87,80 @@ class mazeActivity : AppCompatActivity() {
         for(i in 0..size-1){
             for(j in 0..n-1){
                 val btn=buttons[i][j]
-                btn.setOnClickListener {
-                    var setCol:Int =white
+                var touchCheck:Boolean = false
+                if(btn.hasFocus()) println("$i,$j")
+//                btn.setOnClickListener {
+//                    var setCol:Int =white
+//
+////                    Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
+//                    if(colorArray[i][j]==white){
+//                        setCol = green
+//                    }
+//                    colorFollowingButtons(i,j,j,setCol)
+//                }
+//                btn.setOnTouchListener(object : View.OnTouchListener {
+//                    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+//                        when (event?.action) {
+//                            MotionEvent.ACTION_DOWN-> {
+//                                if(touchCheck) return false
+//                                touchCheck = true
+//                                colorButton(i,j)
+//                            }
+//                            MotionEvent.ACTION_MOVE-> {
+//                                if (touchCheck) return false
+//                                touchCheck = true
+//                                colorButton(i,j)
+//                            }
+//                            else->return false
+//
+//                        }
+//
+//                        return true
+//                    }
+//                })
+                btn.setOnHoverListener(object : View.OnHoverListener {
+                    override fun onHover(v: View?, event: MotionEvent?): Boolean {
+                        when (event?.action) {
+                            MotionEvent.ACTION_DOWN-> {
+                                if(touchCheck) return false
+                                touchCheck = true
+                                colorButton(i,j)
+                            }
+                            MotionEvent.ACTION_HOVER_ENTER-> {
+//                                if (touchCheck) return false
+                                touchCheck = true
+                                colorButton(i,j)
+                            }
+                            else->return false
 
-//                    Toast.makeText(this,"length=${orderArray[i]+1}",Toast.LENGTH_SHORT).show()
-                    if(colorArray[i][j]==white){
-                        setCol = green
+                        }
+
+                        return true
                     }
-                    colorFollowingButtons(i,j,j,setCol)
+                })
+                btn.setOnFocusChangeListener { p0, p1 ->
+                    println("$i,$j")
+                    if(p1){
+                        colorButton(i, j)
+                    }
                 }
+
+//                btn.setOnTouchListener(View.OnTouchListener(){
+//                    @Override
+//                    fun onTouch(View v, MotionEvent event):Boolean{
+//                        return true
+//                    }
+//                })
+
             }
         }
+    }
+    private fun colorButton(i:Int,j:Int){
+        var setCol:Int =white
+        if(colorArray[i][j]==white){
+            setCol = brown
+        }
+        colorFollowingButtons(i,j,j,setCol)
     }
     private fun standardSetup(size: Int,n:Int){
 //        resetFunctionality(keep)

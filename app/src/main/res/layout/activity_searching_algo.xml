@@ -9,10 +9,10 @@
 
     <LinearLayout
         android:id="@+id/col0"
-        android:layout_width="294sp"
-        android:layout_height="461sp"
-        android:layout_marginStart="12sp"
-        android:layout_marginBottom="58sp"
+        android:layout_width="294dp"
+        android:layout_height="466dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="72dp"
         android:layout_weight="1"
 
         android:baselineAligned="false"
@@ -23,11 +23,11 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="205sp"
-        android:layout_height="46sp"
+        android:layout_width="202dp"
+        android:layout_height="50dp"
         android:layout_marginStart="30sp"
 
-        android:layout_marginTop="28sp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="100sp"
         android:minHeight="48sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,6 +35,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/round_legend"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="29dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/round_button"
+        android:gravity="center_vertical|center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView40"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/randomize"
@@ -89,11 +101,21 @@
         android:id="@+id/spinner2"
         android:layout_width="134sp"
         android:layout_height="47sp"
-        android:layout_marginTop="28sp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-
+    <TextView
+        android:id="@+id/notes_search"
+        android:layout_width="327dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,8 +22,8 @@
         android:id="@+id/col1"
         android:layout_width="294sp"
         android:layout_height="461sp"
-        android:layout_marginStart="12sp"
-        android:layout_marginBottom="58sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="72dp"
         android:layout_weight="1"
 
         android:baselineAligned="false"
@@ -38,7 +38,7 @@
         android:layout_height="55sp"
         android:layout_marginStart="30sp"
 
-        android:layout_marginTop="28sp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="100sp"
         android:minHeight="48sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,9 +100,21 @@
         android:id="@+id/spinner_sort2"
         android:layout_width="145sp"
         android:layout_height="57sp"
-        android:layout_marginTop="28sp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <TextView
+        android:id="@+id/notes_sort"
+        android:layout_width="327dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/start_sort"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
