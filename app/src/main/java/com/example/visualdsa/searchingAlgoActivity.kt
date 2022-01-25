@@ -92,7 +92,6 @@ class searchingAlgoActivity : AppCompatActivity() {
         val button2: Button = findViewById(R.id.start)
         var spinner:Spinner = findViewById(R.id.spinner)
         var spinner2:Spinner = findViewById(R.id.spinner2)
-        val round_legend: Button = findViewById(R.id.round_legend)
         val notes:TextView = findViewById(R.id.notes_search)
 
         notes.setText(notesArr[(0..notesArr.size-1).random()])
@@ -154,15 +153,28 @@ class searchingAlgoActivity : AppCompatActivity() {
                 Toast.makeText(this,"Select an element in the array first.",Toast.LENGTH_LONG).show()
             }
         }
-        round_legend.setOnClickListener{
-            makeAlertDialog()
-        }
+
         createButtonScreen(size)
         makeDropDown(searchAlgoArr,spinner.id)
         makeDropDown(speedArr,spinner2.id)
         standardSetup()
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
+        // If you don't have res/menu, just create a directory named "menu" inside res
+        menuInflater.inflate(R.menu.search_algo_help, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
+    // handle button activities
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.legend_button) {
+            // do something here
+            makeAlertDialog()
+        }
+        return super.onOptionsItemSelected(item)
+    }
     private fun makeAlertDialog(){
         val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this@searchingAlgoActivity,R.style.MyDialogTheme)
         var customLayout = getLayoutInflater()
@@ -316,21 +328,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         }
 
     }
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
-//        // If you don't have res/menu, just create a directory named "menu" inside res
-//        menuInflater.inflate(R.menu.search_algo_help, menu)
-//        return super.onCreateOptionsMenu(menu)
-//    }
 //
-//    // handle button activities
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        val id = item.itemId
-//        if (id == R.id.mybutton) {
-//            // do something here
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     private fun binarySearch(){
         GlobalScope.launch {

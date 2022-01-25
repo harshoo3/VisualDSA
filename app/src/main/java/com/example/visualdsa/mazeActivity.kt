@@ -347,6 +347,22 @@ class mazeActivity : AppCompatActivity() {
         button.setBackgroundColor(themeColor)
         button2.setBackgroundColor(themeColor)
     }
+    private fun resetFunctionality(){
+        val slider:Slider = findViewById(R.id.slider)
+        val button: Button = findViewById(R.id.randomize)
+        val button2: Button = findViewById(R.id.start)
+        var spinner:Spinner = findViewById(R.id.spinner)
+        button.text = "Randomise"
+        algoRunning = false
+        algoPaused = false
+        slider.isEnabled = true
+        algoFinished = false
+        spinner.isEnabled = true
+        button.setBackgroundColor(themeColor)
+        button2.setBackgroundColor(green)
+        button2.text = "Start"
+
+    }
     private fun buttonfunctionality(size: Int,n: Int){
         for(i in 0..size-1){
             for(j in 0..n-1){
@@ -355,14 +371,22 @@ class mazeActivity : AppCompatActivity() {
                 if(algoRunning || algoFinished) return
                 btn.setOnClickListener {
                     if(!selectPressed) toggleColorButton(i,j,brown)
-                    else if(!startSelected){
+                    else if(!startSelected && endState!= Pair(i,j)){
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24,0,0,0)
                         startState = Pair(i,j)
                         startSelected=true
-                    }else if(!endSelected){
+                    }else if(!endSelected && startState!=Pair(i,j)){
                         btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_always_landscape_portrait,0,0,0)
                         endSelected=true
                         endState = Pair(i,j)
+                    }else if(startState == Pair(i,j)){
+                        btn.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0)
+                        startState = Pair(-1,-1)
+                        startSelected=false
+                    }else if(endState == Pair(i,j)){
+                        btn.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0)
+                        endState = Pair(-1,-1)
+                        endSelected=false
                     }
                 }
             }
