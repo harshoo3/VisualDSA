@@ -28,6 +28,10 @@ import androidx.core.view.marginLeft
 import java.lang.Exception
 import com.google.android.material.slider.Slider
 import kotlinx.android.synthetic.main.activity_searching_algo.*
+import android.view.Gravity
+
+
+
 
 
 class searchingAlgoActivity : AppCompatActivity() {
@@ -160,43 +164,21 @@ class searchingAlgoActivity : AppCompatActivity() {
     }
 
     private fun makeAlertDialog(){
-//        var layoutid = resources.getIdentifier("search_legend", "id", packageName)
-//        val layout=findViewById<LinearLayout>(R.id.search_legend)
-//
-//        for (i in 1..3) {
-//            val arr = LinearLayout(this)
-//            arr.layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT,1.0f
-//            )
-//            arr.orientation = LinearLayout.HORIZONTAL
-//            arr.setPadding(0,0,0,10)
-//            var textv:TextView = TextView(this)
-//            textv.layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                1.0f
-//            )
-//            textv.setText("hi${i}")
-//            arr.addView(textv)
-//            layout.addView(arr)
-//        }
-        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this@searchingAlgoActivity)
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this@searchingAlgoActivity,R.style.MyDialogTheme)
         var customLayout = getLayoutInflater()
             .inflate(
                 R.layout.search_legend,
                 null);
         alertDialog.setView(customLayout)
-        alertDialog.setTitle("Legend")
-//        alertDialog.
-//        alertDialog.setPositiveButton(
-//            "yes"
-//        ) { _, _ ->
-//            Toast.makeText(this@MainActivity, "Alert dialog closed.", Toast.LENGTH_LONG).show()
-//        }
-//        alertDialog.setNegativeButton(
-//            "No"
-//        ) { _, _ -> }
+        val title = TextView(this)
+        title.text = "Legend"
+        title.setBackgroundColor(black)
+        title.setPadding(10, 25, 10, 15)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 23f
+
+        alertDialog.setCustomTitle(title)
         val alert: AlertDialog = alertDialog.create()
         alert.setCanceledOnTouchOutside(true)
         alert.show()
