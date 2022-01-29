@@ -5,6 +5,5 @@
         android:title=""
         app:showAsAction="always"
         android:icon="@android:drawable/ic_menu_help"
-        android:iconTint="@color/purple_200"
-        />
+        android:iconTint="@color/purple_200" />
 </menu>

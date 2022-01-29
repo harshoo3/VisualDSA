@@ -16,10 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
 import kotlinx.android.synthetic.main.list_item.*
 import kotlinx.android.synthetic.main.list_item.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.system.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -49,7 +47,7 @@ class mazeActivity : AppCompatActivity() {
     var endState: Pair<Int,Int> = Pair(-1,-1)
     var n:Int = 4
     private var colorArray= Array(size) { IntArray(n) }
-    private var ogColorArray= Array(size) { IntArray(n) }
+    private var colorArray2= Array(size) { IntArray(n) }
     private val buttons: MutableList<MutableList<Button>> = ArrayList()
     var startSelected:Boolean = false
     var endSelected:Boolean = false
@@ -98,6 +96,7 @@ class mazeActivity : AppCompatActivity() {
             }
         }
         button2.textSize = 16F
+        button2.text = "Select"
         button2.setBackgroundColor(green)
         button2.setOnClickListener {
             // Code here executes on main thread after user presses button
@@ -112,22 +111,17 @@ class mazeActivity : AppCompatActivity() {
                 button2.text = "Resume"
             }else if(algoFinished){
                 setUpWithoutShuffling(size,n)
-            }
-            else if(startSelected && endSelected){
+            }else if(startSelected && endSelected){
                 button2.text = "Pause"
                 button.text = "Stop"
                 slider.isEnabled = false
                 spinner.isEnabled = false
                 button2.setBackgroundColor(themeColor)
                 button.setBackgroundColor(red)
+                colorArray2 =colorArray
                 when(algoInUse){
                     0->bfs(size,n)
-                    1->{
-                        GlobalScope.launch{
-                            invokedfs()
-                        }
-                        algoFinishedFunctionality()
-                    }
+                    1->invokedfs()
                     2->dijkstra()
                 }
             }else if(selectPressed){
@@ -145,101 +139,84 @@ class mazeActivity : AppCompatActivity() {
         createButtonScreen(size,n)
         standardSetup(size,n)
     }
+    private suspend fun isPaused():Boolean{
+        while(algoPaused){
+            if(algoFinished){
+                return true
+            }
+            delay(100)
+        }
+        if(algoFinished){
+            return true
+        }
+        return false
+    }
     private fun bfs(size: Int,n: Int){
-        GlobalScope.launch(Dispatchers.Main) {
-            algoRunning=true
-            var explored = Array(size) { BooleanArray(n){false} }
-            var q:Queue<Pair<Int,Int>> = LinkedList()
+        GlobalScope.launch(Dispatchers.Main){
+            algoRunning = true
+            var explored = Array(size) { BooleanArray(n) { false } }
+            var q: Queue<Pair<Int, Int>> = LinkedList()
             q.add(startState)
-            while(q.isNotEmpty()){
-                while(algoPaused){
-                    if(algoFinished){
-                        break
-                    }
-                    delay(100)
-                }
-                if(algoFinished){
+            while (q.isNotEmpty()) {
+                if (isPaused()) {
                     break
                 }
                 var curr = q.remove()
-                explored[curr.first][curr.second]= true
-                if(curr==endState) {
-                    while(algoPaused){
-                        if(algoFinished){
-                            break
-                        }
-                        delay(100)
-                    }
-                    if(algoFinished){
+                explored[curr.first][curr.second] = true
+                if (curr == endState) {
+                    if (isPaused()) {
                         break
                     }
-                    colorButton(curr.first,curr.second,green)
+                    colorButton(curr.first, curr.second, green)
                     algoFinished = true
                     break
                 }
-                colorButton(curr.first,curr.second,red)
+                colorButton(curr.first, curr.second, red)
                 delay(speed)
                 println(curr)
-                if(curr.second<n-1){
-                    if(colorArray[curr.first][curr.second+1]==white && !explored[curr.first][curr.second+1] ){
-                        q.add(Pair(curr.first,curr.second+1))
-                        colorButton(curr.first,curr.second+1,blue)
+                if (curr.second < n - 1) {
+                    if (colorArray[curr.first][curr.second + 1] == white && !explored[curr.first][curr.second + 1]) {
+                        q.add(Pair(curr.first, curr.second + 1))
+                        colorButton(curr.first, curr.second + 1, blue)
                         delay(speed)
                     }
                 }
 
-                while(algoPaused){
-                    if(algoFinished){
-                        break
-                    }
-                    delay(100)
-                }
-                if(algoFinished){
+                if (isPaused()) {
                     break
                 }
 
-                if(curr.first<size-1){
-                    if(colorArray[curr.first+1][curr.second]==white && !explored[curr.first][curr.second+1] ){
-                        q.add(Pair(curr.first+1,curr.second))
-                        colorButton(curr.first+1,curr.second,blue)
+                if (curr.first < size - 1) {
+                    if (colorArray[curr.first + 1][curr.second] == white && !explored[curr.first + 1][curr.second]) {
+                        q.add(Pair(curr.first + 1, curr.second))
+                        colorButton(curr.first + 1, curr.second, blue)
                         delay(speed)
                     }
                 }
-                while(algoPaused){
-                    if(algoFinished){
-                        break
-                    }
-                    delay(100)
-                }
-                if(algoFinished){
+                if (isPaused()) {
                     break
                 }
-                if(curr.second>0){
-                    if(colorArray[curr.first][curr.second-1]==white && !explored[curr.first][curr.second+1] ){
-                        q.add(Pair(curr.first,curr.second-1))
-                        colorButton(curr.first,curr.second-1,blue)
+                if (curr.second > 0) {
+                    if (colorArray[curr.first][curr.second - 1] == white && !explored[curr.first][curr.second - 1]) {
+                        q.add(Pair(curr.first, curr.second - 1))
+                        colorButton(curr.first, curr.second - 1, blue)
                         delay(speed)
                     }
                 }
-
-                while(algoPaused){
-                    if(algoFinished){
-                        break
-                    }
-                    delay(100)
-                }
-                if(algoFinished){
+                if (isPaused()) {
                     break
                 }
-                if(curr.first>0){
-                    if( colorArray[curr.first-1][curr.second]==white && !explored[curr.first][curr.second+1] ){
-                        q.add(Pair(curr.first-1,curr.second))
-                        colorButton(curr.first-1,curr.second,blue)
+                if (curr.first > 0) {
+                    if (colorArray[curr.first - 1][curr.second] == white && !explored[curr.first - 1][curr.second]) {
+                        q.add(Pair(curr.first - 1, curr.second))
+                        colorButton(curr.first - 1, curr.second, blue)
                         delay(speed)
                     }
                 }
 
             }
+            if (colorArray2 == colorArray) println("oyoyoyoyooyoyo")
+
             algoFinishedFunctionality()
         }
     }
@@ -248,92 +225,75 @@ class mazeActivity : AppCompatActivity() {
             algoRunning = true
             var explored = Array(size) { BooleanArray(n) { false } }
             dfs(size, n, explored, startState)
+            algoFinishedFunctionality()
         }
     }
-    private fun dfs(size: Int,n: Int,explored:Array<BooleanArray>,curr: Pair<Int,Int>){
-        GlobalScope.launch(Dispatchers.Main) {
-            explored[curr.first][curr.second] = true
-            if(curr==endState) {
-                while(algoPaused){
-                    if(algoFinished){
-                        return@launch
-                    }
-                    delay(100)
-                }
-                if(algoFinished){
-                    return@launch
-                }
-                colorButton(curr.first,curr.second,green)
-                algoFinished = true
-                return@launch
+    private suspend fun dfs(size: Int,n: Int,explored:Array<BooleanArray>,curr: Pair<Int,Int>){
+        explored[curr.first][curr.second] = true
+        if(curr==endState) {
+            if(isPaused()){
+                return
             }
-            while(algoPaused){
-                if(algoFinished){
-                    return@launch
-                }
-                delay(100)
-            }
-            if(algoFinished){
-                return@launch
-            }
-            colorButton(curr.first,curr.second,red)
-            delay(speed)
-            if(curr.second<n-1){
-                if(colorArray[curr.first][curr.second+1]==white && !explored[curr.first][curr.second+1] ){
+            colorButton(curr.first,curr.second,green)
+            algoFinished = true
+            return
+        }
+        if(isPaused()){
+            return
+        }
+        if(curr.second<n-1){
+            if(colorArray[curr.first][curr.second+1]==white && !explored[curr.first][curr.second+1] ){
+                colorButton(curr.first,curr.second+1,blue)
+                delay(speed)
+                var a=GlobalScope.launch (Dispatchers.Main){
                     dfs(size,n,explored,(Pair(curr.first,curr.second+1)))
-                    colorButton(curr.first,curr.second+1,blue)
-                    delay(speed)
                 }
-            }
-            while(algoPaused){
-                if(algoFinished){
-                    return@launch
-                }
-                delay(100)
-            }
-            if(algoFinished){
-                return@launch
-            }
-            if(curr.first<size-1){
-                if(colorArray[curr.first+1][curr.second]==white && !explored[curr.first][curr.second+1] ){
-                    dfs(size,n,explored,(Pair(curr.first+1,curr.second)))
-                    colorButton(curr.first+1,curr.second,blue)
-                    delay(speed)
-                }
-            }
-            while(algoPaused){
-                if(algoFinished){
-                    return@launch
-                }
-                delay(100)
-            }
-            if(algoFinished){
-                return@launch
-            }
-            if(curr.second>0){
-                if(colorArray[curr.first][curr.second-1]==white && !explored[curr.first][curr.second+1] ){
-                    dfs(size,n,explored,(Pair(curr.first,curr.second-1)))
-                    colorButton(curr.first,curr.second-1,blue)
-                    delay(speed)
-                }
-            }
-            while(algoPaused){
-                if(algoFinished){
-                    return@launch
-                }
-                delay(100)
-            }
-            if(algoFinished){
-                return@launch
-            }
-            if(curr.first>0){
-                if( colorArray[curr.first-1][curr.second]==white && !explored[curr.first][curr.second+1] ){
-                    dfs(size,n,explored,(Pair(curr.first-1,curr.second)))
-                    colorButton(curr.first-1,curr.second,blue)
-                    delay(speed)
-                }
+                a.join()
             }
         }
+        if(isPaused()){
+            return
+        }
+        if(curr.first<size-1){
+            if(colorArray[curr.first+1][curr.second]==white && !explored[curr.first+1][curr.second] ){
+                colorButton(curr.first+1,curr.second,blue)
+                delay(speed)
+                var a=GlobalScope.launch (Dispatchers.Main){
+                    dfs(size, n, explored, (Pair(curr.first + 1, curr.second)))
+                }
+                a.join()
+            }
+        }
+        if(isPaused()){
+            return
+        }
+        if(curr.second>0){
+            if(colorArray[curr.first][curr.second-1]==white && !explored[curr.first][curr.second-1] ){
+                colorButton(curr.first,curr.second-1,blue)
+                delay(speed)
+                var a=GlobalScope.launch (Dispatchers.Main){
+                    dfs(size, n, explored, (Pair(curr.first, curr.second - 1)))
+                }
+                a.join()
+            }
+        }
+        if(isPaused()){
+            return
+        }
+        if(curr.first>0){
+            if( colorArray[curr.first-1][curr.second]==white && !explored[curr.first-1][curr.second] ){
+                colorButton(curr.first-1,curr.second,blue)
+                delay(speed)
+                var a=GlobalScope.launch (Dispatchers.Main){
+                    dfs(size,n,explored,(Pair(curr.first-1,curr.second)))
+                }
+                a.join()
+            }
+        }
+        colorButton(curr.first,curr.second,red)
+        delay(speed)
+
+//        }
     }
     private fun dijkstra(){}
     private fun algoFinishedFunctionality(){
@@ -346,12 +306,13 @@ class mazeActivity : AppCompatActivity() {
         button2.text = "Reset"
         button.setBackgroundColor(themeColor)
         button2.setBackgroundColor(themeColor)
+        colorArray = colorArray2
     }
-    private fun resetFunctionality(){
-        val slider:Slider = findViewById(R.id.slider)
-        val button: Button = findViewById(R.id.randomize)
-        val button2: Button = findViewById(R.id.start)
-        var spinner:Spinner = findViewById(R.id.spinner)
+    private fun resetFunctionality(keep: Boolean=false){
+        val slider:Slider = findViewById(R.id.slider_maze)
+        val button: Button = findViewById(R.id.randomize_maze)
+        val button2: Button = findViewById(R.id.start_maze)
+        var spinner:Spinner = findViewById(R.id.spinner_maze1)
         button.text = "Randomise"
         algoRunning = false
         algoPaused = false
@@ -361,7 +322,12 @@ class mazeActivity : AppCompatActivity() {
         button.setBackgroundColor(themeColor)
         button2.setBackgroundColor(green)
         button2.text = "Start"
-
+        if(keep) return
+        button2.text = "Select"
+        startSelected = false
+        endSelected = false
+        startState = Pair(-1,-1)
+        endState = Pair(-1,-1)
     }
     private fun buttonfunctionality(size: Int,n: Int){
         for(i in 0..size-1){
@@ -432,17 +398,18 @@ class mazeActivity : AppCompatActivity() {
         colorFollowingButtons(i,j,j,color)
     }
     private fun standardSetup(size: Int,n:Int){
-//        resetFunctionality(keep)
+        resetFunctionality()
         destroyButtons()
         createButtonScreen(size,n)
         colorButtonScreen(size,n)
         buttonfunctionality(size,n)
     }
     private fun setUpWithoutShuffling(size: Int,n:Int){
-//        resetFunctionality(keep)
-        destroyButtons()
+        resetFunctionality(true)
+        destroyButtons(true)
         createButtonScreen(size,n)
         colorCurrentButtonScreen(size,n)
+//        colorButtonScreen(size,n)
         buttonfunctionality(size,n)
     }
     private fun createButtonScreen(size: Int,n:Int) {
@@ -495,7 +462,6 @@ class mazeActivity : AppCompatActivity() {
         val buttonScreen =findViewById<LinearLayout>(id)
         (buttonScreen.getParent() as ViewGroup).removeView(buttonScreen)
         buttons.removeAll(buttons)
-
 //        if(keep){
 //            return
 //        }
@@ -511,7 +477,7 @@ class mazeActivity : AppCompatActivity() {
     private fun colorCurrentButtonScreen(size:Int,n:Int){
         for(i in 0..size-1){
             for(j in 0..n-1){
-                colorFollowingButtons(i,j,j,ogColorArray[i][j])
+                colorFollowingButtons(i,j,j,colorArray[i][j])
             }
         }
     }

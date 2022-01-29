@@ -22,6 +22,7 @@ class sortingAlgoActivity : AppCompatActivity() {
     val red:Int = Color.parseColor("#FF0000")
     val blue:Int = Color.parseColor("#0000FF")
     val yellow:Int = Color.parseColor("#FCF4A3")
+    val orange:Int = Color.parseColor("#FFAF42")
     val brown:Int = Color.parseColor("#8A3324")
     var speedMap = mutableMapOf<String,Double>()
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x","2x","4x","8x")
@@ -112,9 +113,9 @@ class sortingAlgoActivity : AppCompatActivity() {
                     0->bubbleSort()
                     1->selectionSort()
                     2->insertionSort()
-                    3->mergeSort()
-                    4->quickSort()
-                    else-> heapSort()
+                    3->invokeMergeSort()
+                    4->invokeQuickSort()
+                    5->invokeHeapSort()
                 }
             }
         }
@@ -364,17 +365,225 @@ class sortingAlgoActivity : AppCompatActivity() {
 //            holdFunctionality()
         }
     }
-    private fun mergeSort(){
-
+    private fun invokeMergeSort() {
+        GlobalScope.launch (Dispatchers.Main){
+            algoRunning = true
+            mergeSort(0,size-1)
+            algoFinishedFunctionality()
+        }
     }
-    private fun quickSort(){
+    private suspend fun merge(p:Int,q:Int,r:Int){
+        if(isPaused()) return
+        colorFollowingButtons(r,0,orderArray[r],brown)
+        colorFollowingButtons(p,0,orderArray[p],yellow)
+        colorFollowingButtons(q,0,orderArray[q],orange)
+        delay(speed)
+        if(isPaused()) return
+        colorFollowingButtons(r,0,orderArray[r],themeColor)
+        colorFollowingButtons(p,0,orderArray[p],themeColor)
+        colorFollowingButtons(q,0,orderArray[q],themeColor)
+        var n1:Int = q - p + 1
+        var n2:Int = r - q
 
+        var L:IntArray= IntArray(n1)
+        var M:IntArray= IntArray(n2)
+
+        for (i in 0..n1-1)  L[i] = orderArray[p + i];
+        for (i in 0..n2-1)  M[i] = orderArray[q + 1 + i];
+
+        // Maintain current index of sub-arrays and main array
+        var i:Int = 0
+        var j:Int = 0
+        var k:Int = p
+
+        while (i < n1 && j < n2) {
+            if(isPaused()) break
+            if (L[i] <= M[j]) {
+                orderArray[k] = L[i]
+                setUpCurrentScreen(true)
+                colorFollowingButtons(k,0,orderArray[k],blue)
+                i++
+            } else {
+                orderArray[k] = M[j]
+                setUpCurrentScreen(true)
+                colorFollowingButtons(k,0,orderArray[k],red)
+                j++
+            }
+            delay(speed)
+            k++
+        }
+        while (i < n1) {
+            if(isPaused()) break
+            orderArray[k] = L[i]
+            setUpCurrentScreen(true)
+            colorFollowingButtons(k,0,orderArray[k],blue)
+            delay(speed)
+            i++
+            k++
+        }
+        while (j < n2) {
+            if(isPaused()) break
+            orderArray[k] = M[j]
+            setUpCurrentScreen(true)
+            colorFollowingButtons(k,0,orderArray[k],red)
+            delay(speed)
+            j++
+            k++
+        }
+        if(isPaused()) return
+        for(k in p..r){
+            colorFollowingButtons(k,0,orderArray[k],themeColor)
+//            colorFollowingButtons(k,orderArray[k]+1,size-1,black)
+        }
     }
-    private fun heapSort(){
-
+    private suspend fun mergeSort(low:Int,high:Int){
+        if(isPaused()) return
+        if(low<high){
+            colorFollowingButtons(high,0,orderArray[high],brown)
+            colorFollowingButtons(low,0,orderArray[low],yellow)
+            delay(speed)
+            colorFollowingButtons(high,0,orderArray[high],themeColor)
+            colorFollowingButtons(low,0,orderArray[low],themeColor)
+            var pi:Int = low + (high - low) / 2
+            var x=GlobalScope.launch (Dispatchers.Main) {
+                mergeSort(low, pi)
+                mergeSort(pi + 1, high)
+                merge(low,pi,high)
+            }
+            x.join()
+        }
+    }
+    private fun invokeQuickSort() {
+        GlobalScope.launch (Dispatchers.Main){
+            algoRunning = true
+            quickSort(0,size-1)
+            algoFinishedFunctionality()
+        }
+    }
+    private suspend fun partitionQuickSort(low:Int, high:Int):Int{
+        if(isPaused()) return -1
+        var pivot:Int = orderArray[high]
+        colorFollowingButtons(high,0,orderArray[high],orange)
+        var i:Int = (low - 1)
+//        colorFollowingButtons(i,0,orderArray[i],green)
+        for (j in low..high-1) {
+            if(isPaused()) break
+            colorFollowingButtons(j,0,orderArray[j],blue)
+            delay(100)
+            if(isPaused()) break
+            if (orderArray[j] < pivot) {
+                i++
+                swapDrop(i,j)
+                swapColor(i,j)
+                setUpCurrentScreen(true)
+            }
+            colorFollowingButtons(j,0,orderArray[j],red)
+        }
+        swapDrop(i+1,high)
+        swapColor(i+1,high)
+        setUpCurrentScreen(true)
+        delay(speed)
+        if(isPaused()) return -1
+        for(k in 0..size-1){
+            if(isPaused()) break
+            if(k==i+1){
+                colorFollowingButtons(k,0,orderArray[k],green)
+                colorFollowingButtons(k,orderArray[k]+1,size-1,black)
+                delay(speed)
+            }
+            colorFollowingButtons(k,0,orderArray[k],themeColor)
+            colorFollowingButtons(k,orderArray[k]+1,size-1,black)
+        }
+        if(isPaused()) return -1
+//        delay(speed)
+//        for(k in 0..size-1){
+//
+//        }
+        delay(speed)
+        return (i + 1)
+    }
+    private suspend fun quickSort(low:Int, high:Int){
+        if(isPaused()) return
+        if(low<high){
+            colorFollowingButtons(high,0,orderArray[high],brown)
+            colorFollowingButtons(low,0,orderArray[low],yellow)
+            delay(speed)
+            if(isPaused()) return
+            colorFollowingButtons(high,0,orderArray[high],themeColor)
+            colorFollowingButtons(low,0,orderArray[low],themeColor)
+            if(isPaused())  return
+            var pi: Int
+            var x=GlobalScope.launch (Dispatchers.Main) {
+                pi = partitionQuickSort(low, high)
+                quickSort(low, pi - 1)
+                quickSort(pi + 1, high)
+                if(isPaused()) return@launch
+            }
+            x.join()
+        }
+    }
+    private fun invokeHeapSort() {
+        GlobalScope.launch (Dispatchers.Main){
+            algoRunning = true
+            heapSort(size)
+            algoFinishedFunctionality()
+        }
+    }
+    private suspend fun heapify(n:Int,i:Int){
+        if(isPaused()) return
+        var largest:Int = i
+        colorFollowingButtons(largest,0,orderArray[largest],blue)
+        delay(speed)
+        if(isPaused()) return
+        val l = 2 * i + 1
+        val r = 2 * i + 2
+        if (l < n && orderArray[l] > orderArray[largest]) largest = l
+        if (r < n && orderArray[r] > orderArray[largest]) largest = r
+        if(isPaused()) return
+        if (largest != i) {
+            swapDrop(i,largest)
+            swapColor(i,largest)
+            setUpCurrentScreen(true)
+            if(isPaused()) return
+            var x=GlobalScope.launch (Dispatchers.Main) {
+                heapify(n, largest)
+            }
+            x.join()
+        }
+    }
+    private suspend fun heapSort(n: Int){
+        for (i in (n/2)-1 downTo  0){
+            if(isPaused()) break
+            var x=GlobalScope.launch(Dispatchers.Main) {
+                heapify(n, i)
+            }
+            x.join()
+        }
+        for (i in n - 1 downTo 1) {
+            if(isPaused()) break
+            var x=GlobalScope.launch(Dispatchers.Main) {
+                swapDrop(0, i)
+                swapColor(0, i)
+                setUpCurrentScreen(true)
+                if(isPaused()) return@launch
+                heapify( i, 0)
+            }
+            x.join()
+        }
     }
 
-
+    private suspend fun isPaused():Boolean{
+        while(algoPaused){
+            if(algoFinished){
+                return true
+            }
+            delay(100)
+        }
+        if(algoFinished){
+            return true
+        }
+        return false
+    }
     private fun algoFinishedFunctionality(){
         val button: Button = findViewById(R.id.randomize_sort)
         val button2: Button = findViewById(R.id.start_sort)
