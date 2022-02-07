@@ -185,7 +185,7 @@ class searchingAlgoActivity : AppCompatActivity() {
         }
         val title = TextView(this)
         var str:String=if(algoInUse==1) "Binary Search" else "Linear Search"
-        ("$str Legend").also { title.text = it }
+        title.text=str
         title.setBackgroundColor(black)
         title.setPadding(10, 35, 10, 25)
         title.gravity = Gravity.CENTER

@@ -5,11 +5,12 @@ import android.content.ClipDescription
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.DragEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.coroutines.*
 import android.widget.*
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.view.size
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.GlobalScope
@@ -22,13 +23,17 @@ class sortingAlgoActivity : AppCompatActivity() {
     val red:Int = Color.parseColor("#FF0000")
     val blue:Int = Color.parseColor("#0000FF")
     val yellow:Int = Color.parseColor("#FCF4A3")
-    val orange:Int = Color.parseColor("#FFAF42")
+    val orange:Int = Color.parseColor("#FF6700")
     val brown:Int = Color.parseColor("#8A3324")
     var speedMap = mutableMapOf<String,Double>()
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x","2x","4x","8x")
     var sortAlgoArr = arrayOf("Bubble Sort","Selection Sort","Insertion Sort","Merge Sort","Quick Sort","Heap Sort")
-    var algoMap= mutableMapOf<String,Int>("Bubble Sort" to 0,"Selection Sort" to 1,"Insertion Sort" to 2,"Merge Sort" to 3,"Quick Sort" to 4,"Heap Sort" to 5)
+    var bubbleSortLegend= mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Maximum element so far in the loop" to R.drawable.legend_blue,"Element in sorted position" to R.drawable.legend_green,"Element parsed" to R.drawable.legend_red)
+    var selectionSortLegend= mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Minimum element so far in the loop" to R.drawable.legend_yellow,"Element being parsed" to R.drawable.legend_blue, "Element in sorted position" to R.drawable.legend_green, "Element parsed" to R.drawable.legend_red)
+//    var insertionSortLegend= mutableMapOf<String,Int>("")
     var buttonIdMap= mutableMapOf<Int,Int>()
+    var algoMap= mutableMapOf<String,Int>()
+    var algoRevMap = mutableMapOf<Int,String>()
     var algoInUse:Int = 0
     var algoRunning: Boolean= false
     var algoFinished:Boolean = false
@@ -43,6 +48,10 @@ class sortingAlgoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sorting_algo)
+        for(i in 0..sortAlgoArr.size-1){
+            algoMap[sortAlgoArr[i]]=i
+            algoRevMap[i]=sortAlgoArr[i]
+        }
         for(i in 0..speedArr.size-1){
             speedMap[speedArr[i]]=1/((speedArr[i].subSequence(0,speedArr[i].length-1).toString().toDouble())*3)
             println(speedMap[speedArr[i]])
@@ -100,7 +109,11 @@ class sortingAlgoActivity : AppCompatActivity() {
                 button2.text = "Resume"
             }else if(algoFinished){
                 resetFunctionality()
-                setUpWithoutShuffling()
+                if(algoInUse==0 || algoInUse == 1){
+                    setUpWithoutShuffling()
+                }else{
+                    standardSetup()
+                }
             }
             else{
                 button2.text = "Pause"
@@ -123,6 +136,55 @@ class sortingAlgoActivity : AppCompatActivity() {
         makeDropDown(sortAlgoArr,spinner.id)
         makeDropDown(speedArr,spinner2.id)
         standardSetup()
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
+        // If you don't have res/menu, just create a directory named "menu" inside res
+        menuInflater.inflate(R.menu.search_algo_help, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // handle button activities
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.legend_button) {
+            // do something here
+            makeAlertDialog()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    private fun makeAlertDialog(){
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this,R.style.MyDialogTheme)
+        val parent = LinearLayout(this)
+        alertDialog.setView(parent)
+        parent.layoutParams =
+            LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
+        parent.orientation = LinearLayout.VERTICAL
+        parent.setPadding(20,20,20,40)
+        var mapToBeParsed = bubbleSortLegend
+        for((k,v) in mapToBeParsed){
+            val tv1 = TextView(this)
+            val drawable = ContextCompat.getDrawable(this, v)
+            tv1.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+            tv1.setCompoundDrawablePadding(28)
+            tv1.text = k
+            tv1.textSize = 19f
+            tv1.setPadding(20,20,0,20)
+            parent.addView(tv1)
+        }
+        val title = TextView(this)
+        var str=algoRevMap[algoInUse]
+        title.text = str
+        title.setBackgroundColor(black)
+        title.setPadding(10, 35, 10, 25)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 23f
+
+        alertDialog.setCustomTitle(title)
+        val alert: AlertDialog = alertDialog.create()
+        alert.setCanceledOnTouchOutside(true)
+        alert.show()
     }
     private fun holdFunctionality(){
         for(i in 0..size-1){
@@ -327,15 +389,20 @@ class sortingAlgoActivity : AppCompatActivity() {
 //                        createButtonScreen(size)
                         break
                     }
-                    colorFollowingButtons(j,0,orderArray[j],red)
+                    colorFollowingButtons(j,0,orderArray[j],blue)
                     delay(speed)
+                    colorFollowingButtons(j,0,orderArray[j],red)
+//                    delay(speed)
                     orderArray[j + 1] = orderArray[j]
 //                    setUpCurrentScreen(true)
                     colorFollowingButtons(j+1,0,orderArray[j+1],blue)
                     colorFollowingButtons(j+1,orderArray[j+1]+1,size-1,black)
+                    delay(speed)
+                    colorFollowingButtons(j+1,0,orderArray[j+1],red)
+                    delay(speed)
 //                    createButtonScreen(size)
                     setUpCurrentScreen(true)
-                    delay(speed)
+//                    delay(speed)
                     j-=1
                 }
                 orderArray[j + 1] = key
@@ -344,6 +411,7 @@ class sortingAlgoActivity : AppCompatActivity() {
                     break
                 }
                 for(k in 0..i){
+                    if(colorArray[k]==green) continue
                     if(orderArray[k]==k || k==j+1){
                         colorFollowingButtons(k,0,orderArray[k],green)
                         colorFollowingButtons(k,orderArray[k]+1,size-1,black)
@@ -355,20 +423,17 @@ class sortingAlgoActivity : AppCompatActivity() {
 //                        delay(speed)
                     }
                 }
-//                delay(speed)
+                delay(speed)
             }
             algoFinishedFunctionality()
-//            destroyButtons()
-//            createButtonScreen(size)
-//            createShuffledArrays(size)
-//            colorButtonScreen(size)
-//            holdFunctionality()
         }
     }
     private fun invokeMergeSort() {
         GlobalScope.launch (Dispatchers.Main){
             algoRunning = true
             mergeSort(0,size-1)
+            delay(speed)
+            greenIfFinished(0,size-1)
             algoFinishedFunctionality()
         }
     }
@@ -376,12 +441,34 @@ class sortingAlgoActivity : AppCompatActivity() {
         if(isPaused()) return
         colorFollowingButtons(r,0,orderArray[r],brown)
         colorFollowingButtons(p,0,orderArray[p],yellow)
-        colorFollowingButtons(q,0,orderArray[q],orange)
+//        colorFollowingButtons(q,0,orderArray[q],orange)
+        delay(speed)
+        if(p<q){
+            for(i in p+1..q){
+                colorFollowingButtons(i,0,orderArray[i],yellow)
+            }
+        }
+        if(q<r){
+            for(i in q+1..r){
+                colorFollowingButtons(i,0,orderArray[i],brown)
+            }
+        }
         delay(speed)
         if(isPaused()) return
         colorFollowingButtons(r,0,orderArray[r],themeColor)
         colorFollowingButtons(p,0,orderArray[p],themeColor)
-        colorFollowingButtons(q,0,orderArray[q],themeColor)
+        if(p<q){
+            for(i in p+1..q){
+                colorFollowingButtons(i,0,orderArray[i],themeColor)
+            }
+        }
+        if(q<r){
+            for(i in q+1..r){
+                colorFollowingButtons(i,0,orderArray[i],themeColor)
+            }
+        }
+        delay(speed)
+        if(isPaused()) return
         var n1:Int = q - p + 1
         var n2:Int = r - q
 
@@ -401,12 +488,12 @@ class sortingAlgoActivity : AppCompatActivity() {
             if (L[i] <= M[j]) {
                 orderArray[k] = L[i]
                 setUpCurrentScreen(true)
-                colorFollowingButtons(k,0,orderArray[k],blue)
+                colorFollowingButtons(k,0,orderArray[k],yellow)
                 i++
             } else {
                 orderArray[k] = M[j]
                 setUpCurrentScreen(true)
-                colorFollowingButtons(k,0,orderArray[k],red)
+                colorFollowingButtons(k,0,orderArray[k],brown)
                 j++
             }
             delay(speed)
@@ -416,7 +503,7 @@ class sortingAlgoActivity : AppCompatActivity() {
             if(isPaused()) break
             orderArray[k] = L[i]
             setUpCurrentScreen(true)
-            colorFollowingButtons(k,0,orderArray[k],blue)
+            colorFollowingButtons(k,0,orderArray[k],yellow)
             delay(speed)
             i++
             k++
@@ -425,7 +512,7 @@ class sortingAlgoActivity : AppCompatActivity() {
             if(isPaused()) break
             orderArray[k] = M[j]
             setUpCurrentScreen(true)
-            colorFollowingButtons(k,0,orderArray[k],red)
+            colorFollowingButtons(k,0,orderArray[k],brown)
             delay(speed)
             j++
             k++
@@ -439,11 +526,6 @@ class sortingAlgoActivity : AppCompatActivity() {
     private suspend fun mergeSort(low:Int,high:Int){
         if(isPaused()) return
         if(low<high){
-            colorFollowingButtons(high,0,orderArray[high],brown)
-            colorFollowingButtons(low,0,orderArray[low],yellow)
-            delay(speed)
-            colorFollowingButtons(high,0,orderArray[high],themeColor)
-            colorFollowingButtons(low,0,orderArray[low],themeColor)
             var pi:Int = low + (high - low) / 2
             var x=GlobalScope.launch (Dispatchers.Main) {
                 mergeSort(low, pi)
@@ -457,6 +539,8 @@ class sortingAlgoActivity : AppCompatActivity() {
         GlobalScope.launch (Dispatchers.Main){
             algoRunning = true
             quickSort(0,size-1)
+            delay(speed)
+            greenIfFinished(0,size-1)
             algoFinishedFunctionality()
         }
     }
@@ -469,15 +553,20 @@ class sortingAlgoActivity : AppCompatActivity() {
         for (j in low..high-1) {
             if(isPaused()) break
             colorFollowingButtons(j,0,orderArray[j],blue)
-            delay(100)
+            delay(speed)
             if(isPaused()) break
             if (orderArray[j] < pivot) {
                 i++
                 swapDrop(i,j)
                 swapColor(i,j)
+                colorFollowingButtons(i,0,orderArray[i],yellow)
                 setUpCurrentScreen(true)
+                delay(speed)
             }
-            colorFollowingButtons(j,0,orderArray[j],red)
+            if(i<j) {
+                colorFollowingButtons(j,0,orderArray[j],brown)
+                delay(speed)
+            }
         }
         swapDrop(i+1,high)
         swapColor(i+1,high)
@@ -489,17 +578,17 @@ class sortingAlgoActivity : AppCompatActivity() {
             if(k==i+1){
                 colorFollowingButtons(k,0,orderArray[k],green)
                 colorFollowingButtons(k,orderArray[k]+1,size-1,black)
-                delay(speed)
             }
             colorFollowingButtons(k,0,orderArray[k],themeColor)
             colorFollowingButtons(k,orderArray[k]+1,size-1,black)
         }
+        delay(speed)
         if(isPaused()) return -1
 //        delay(speed)
 //        for(k in 0..size-1){
 //
 //        }
-        delay(speed)
+//        delay(speed)
         return (i + 1)
     }
     private suspend fun quickSort(low:Int, high:Int){
@@ -511,6 +600,7 @@ class sortingAlgoActivity : AppCompatActivity() {
             if(isPaused()) return
             colorFollowingButtons(high,0,orderArray[high],themeColor)
             colorFollowingButtons(low,0,orderArray[low],themeColor)
+            delay(speed)
             if(isPaused())  return
             var pi: Int
             var x=GlobalScope.launch (Dispatchers.Main) {
@@ -583,6 +673,25 @@ class sortingAlgoActivity : AppCompatActivity() {
             return true
         }
         return false
+    }
+    private suspend fun greenIfFinished(low:Int,high:Int){
+        var checker = true
+        if(low==0 && high==size-1){
+            for(i in 0..size-1){
+                println(orderArray[i])
+                if(orderArray[i]!=i){
+                    checker=false
+                    break
+                }
+            }
+            if(checker){
+                delay(speed)
+                for(k in 0..size-1){
+                    colorFollowingButtons(k,0,orderArray[k],green)
+                }
+                delay(speed)
+            }
+        }
     }
     private fun algoFinishedFunctionality(){
         val button: Button = findViewById(R.id.randomize_sort)
