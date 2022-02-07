@@ -1,37 +1,24 @@
 package com.example.visualdsa
 
-import android.R.id
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.res.ColorStateList
+import android.content.Context
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
 import android.view.*
 import android.widget.*
+import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBar.DISPLAY_SHOW_CUSTOM
 import androidx.appcompat.app.ActionBar.LayoutParams
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
-import java.util.Timer import kotlin.concurrent.schedule
-import androidx.core.content.ContentProviderCompat.requireContext
-import android.widget.TableLayout
-
-import android.widget.TextView
-import kotlinx.coroutines.*
-import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.marginBottom
-import androidx.core.view.marginLeft
-import java.lang.Exception
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.slider.Slider
 import kotlinx.android.synthetic.main.activity_searching_algo.*
-import android.view.Gravity
-
-
-
+import kotlinx.coroutines.*
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import kotlinx.android.synthetic.main.list_item.view.*
 
 
 class searchingAlgoActivity : AppCompatActivity() {
@@ -52,6 +39,8 @@ class searchingAlgoActivity : AppCompatActivity() {
     var colorArray= Array(size) { themeColor }
     var speedArr = arrayOf("1x","0.25x","0.5x","0.75x","1.25x","1.5x", "1.75x","2x","4x")
     var searchAlgoArr = arrayOf("Linear Search","Binary Search")
+    var linearSearchLegend = mutableMapOf<String,Int>("Unparsed in the current loop" to R.drawable.legend_theme_color,"Selected element" to R.drawable.legend_blue,"Element parsed" to R.drawable.legend_red,"Selected element found" to R.drawable.legend_green )
+    var binarySearchLegend = mutableMapOf<String,Int>("Unparsed in the current loop" to R.drawable.legend_theme_color,"Selected element" to R.drawable.legend_blue,"Element parsed" to R.drawable.legend_red,"Selected element found" to R.drawable.legend_green, "Low" to R.drawable.legend_yellow,"High" to R.drawable.legend_brown )
     var algoInUse:Int = 0
     var algoRunning: Boolean= false
     var algoFinished:Boolean = false
@@ -176,16 +165,29 @@ class searchingAlgoActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
     private fun makeAlertDialog(){
-        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this@searchingAlgoActivity,R.style.MyDialogTheme)
-        var customLayout = getLayoutInflater()
-            .inflate(
-                R.layout.search_legend,
-                null);
-        alertDialog.setView(customLayout)
+        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this,R.style.MyDialogTheme)
+        val parent = LinearLayout(this)
+        alertDialog.setView(parent)
+        parent.layoutParams =
+            LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        parent.orientation = LinearLayout.VERTICAL
+        parent.setPadding(20,20,20,40)
+        var mapToBeParsed = if(algoInUse==0) linearSearchLegend else binarySearchLegend
+        for((k,v) in mapToBeParsed){
+            val tv1 = TextView(this)
+            val drawable = ContextCompat.getDrawable(this, v)
+            tv1.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+            tv1.setCompoundDrawablePadding(28)
+            tv1.text = k
+            tv1.textSize = 19f
+            tv1.setPadding(20,20,0,20)
+            parent.addView(tv1)
+        }
         val title = TextView(this)
-        title.text = "Legend"
+        var str:String=if(algoInUse==1) "Binary Search" else "Linear Search"
+        ("$str Legend").also { title.text = it }
         title.setBackgroundColor(black)
-        title.setPadding(10, 25, 10, 15)
+        title.setPadding(10, 35, 10, 25)
         title.gravity = Gravity.CENTER
         title.setTextColor(Color.WHITE)
         title.textSize = 23f

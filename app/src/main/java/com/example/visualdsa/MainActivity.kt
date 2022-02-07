@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.ListAdapter
 
 
 class MainActivity : AppCompatActivity() {
-    val topic = arrayOf<String>("Searching", "Sorting", "Maze Runner", "Graph Algorithms",
+    val topic = arrayOf<String>("Search Algorithms", "Sorting Algorithms", "Maze Runner", "Graph Algorithms",
         "Tree Algorithms")
     val description = arrayOf<String>(
         "C programming is considered as the base for other programming languages",
