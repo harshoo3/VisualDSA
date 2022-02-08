@@ -30,7 +30,11 @@ class sortingAlgoActivity : AppCompatActivity() {
     var sortAlgoArr = arrayOf("Bubble Sort","Selection Sort","Insertion Sort","Merge Sort","Quick Sort","Heap Sort")
     var bubbleSortLegend= mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Maximum element so far in the loop" to R.drawable.legend_blue,"Element in sorted position" to R.drawable.legend_green,"Element parsed" to R.drawable.legend_red)
     var selectionSortLegend= mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Minimum element so far in the loop" to R.drawable.legend_yellow,"Element being parsed" to R.drawable.legend_blue, "Element in sorted position" to R.drawable.legend_green, "Element parsed" to R.drawable.legend_red)
-//    var insertionSortLegend= mutableMapOf<String,Int>("")
+    var insertionSortLegend= mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Key" to R.drawable.legend_yellow, "Element being parsed" to R.drawable.legend_blue,"Element in sorted position" to R.drawable.legend_green,"Elements greater than Key" to R.drawable.legend_red)
+    var mergeSortLegend = mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color, "Low or elements belonging to first array" to R.drawable.legend_yellow,"High or elements belonging to second array" to R.drawable.legend_brown, "Elements in sorted position" to R.drawable.legend_green)
+    var quickSortLegend = mutableMapOf<String,Int>("Unparsed element in the loop" to R.drawable.legend_theme_color,"Low or elements lesser than Key" to R.drawable.legend_yellow, "High or elements greater than Key" to R.drawable.legend_brown, "Element being parsed" to R.drawable.legend_blue,"Elements in sorted position" to R.drawable.legend_green)
+    var heapSortLegend = mutableMapOf<String,Int>()
+    var algoToLegend = mutableMapOf<Int,MutableMap<String,Int>>(0 to bubbleSortLegend,1 to selectionSortLegend,2 to insertionSortLegend,3 to mergeSortLegend,4 to quickSortLegend,5 to heapSortLegend)
     var buttonIdMap= mutableMapOf<Int,Int>()
     var algoMap= mutableMapOf<String,Int>()
     var algoRevMap = mutableMapOf<Int,String>()
@@ -161,7 +165,7 @@ class sortingAlgoActivity : AppCompatActivity() {
             LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
         parent.orientation = LinearLayout.VERTICAL
         parent.setPadding(20,20,20,40)
-        var mapToBeParsed = bubbleSortLegend
+        var mapToBeParsed = algoToLegend[algoInUse]!!
         for((k,v) in mapToBeParsed){
             val tv1 = TextView(this)
             val drawable = ContextCompat.getDrawable(this, v)

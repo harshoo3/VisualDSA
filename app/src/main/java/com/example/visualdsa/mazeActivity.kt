@@ -110,7 +110,7 @@ class mazeActivity : AppCompatActivity() {
                 button2.setBackgroundColor(green)
                 button2.text = "Resume"
             }else if(algoFinished){
-                setUpWithoutShuffling(size,n)
+                standardSetup(size,n)
             }else if(startSelected && endSelected){
                 button2.text = "Pause"
                 button.text = "Stop"
@@ -118,7 +118,7 @@ class mazeActivity : AppCompatActivity() {
                 spinner.isEnabled = false
                 button2.setBackgroundColor(themeColor)
                 button.setBackgroundColor(red)
-                colorArray2 =colorArray
+                colorArray2 =colorArray.clone()
                 when(algoInUse){
                     0->bfs(size,n)
                     1->invokedfs()
@@ -173,7 +173,7 @@ class mazeActivity : AppCompatActivity() {
                 }
                 colorButton(curr.first, curr.second, red)
                 delay(speed)
-                println(curr)
+//                println(curr)
                 if (curr.second < n - 1) {
                     if (colorArray[curr.first][curr.second + 1] == white && !explored[curr.first][curr.second + 1]) {
                         q.add(Pair(curr.first, curr.second + 1))
@@ -306,9 +306,9 @@ class mazeActivity : AppCompatActivity() {
         button2.text = "Reset"
         button.setBackgroundColor(themeColor)
         button2.setBackgroundColor(themeColor)
-        colorArray = colorArray2
+//        colorArray = colorArray2.t()
     }
-    private fun resetFunctionality(keep: Boolean=false){
+    private fun resetFunctionality(){
         val slider:Slider = findViewById(R.id.slider_maze)
         val button: Button = findViewById(R.id.randomize_maze)
         val button2: Button = findViewById(R.id.start_maze)
@@ -321,8 +321,6 @@ class mazeActivity : AppCompatActivity() {
         spinner.isEnabled = true
         button.setBackgroundColor(themeColor)
         button2.setBackgroundColor(green)
-        button2.text = "Start"
-        if(keep) return
         button2.text = "Select"
         startSelected = false
         endSelected = false
@@ -363,7 +361,6 @@ class mazeActivity : AppCompatActivity() {
             for(j in 0..n-1){
                 val btn=buttons[i][j]
 //                var touchCheck:Boolean = false
-                if(btn.hasFocus()) println("$i,$j")
                 btn.setOnClickListener {
                     toggleColorButton(i,j,brown)
                 }
@@ -405,8 +402,8 @@ class mazeActivity : AppCompatActivity() {
         buttonfunctionality(size,n)
     }
     private fun setUpWithoutShuffling(size: Int,n:Int){
-        resetFunctionality(true)
-        destroyButtons(true)
+        resetFunctionality()
+        destroyButtons()
         createButtonScreen(size,n)
         colorCurrentButtonScreen(size,n)
 //        colorButtonScreen(size,n)
@@ -457,7 +454,7 @@ class mazeActivity : AppCompatActivity() {
             buttonScreen.addView(arr)
         }
     }
-    private fun destroyButtons(keep: Boolean=false){
+    private fun destroyButtons(){
         var id = resources.getIdentifier("buttonScreen", "id", packageName)
         val buttonScreen =findViewById<LinearLayout>(id)
         (buttonScreen.getParent() as ViewGroup).removeView(buttonScreen)
@@ -477,7 +474,7 @@ class mazeActivity : AppCompatActivity() {
     private fun colorCurrentButtonScreen(size:Int,n:Int){
         for(i in 0..size-1){
             for(j in 0..n-1){
-                colorFollowingButtons(i,j,j,colorArray[i][j])
+                colorButton(i,j,colorArray[i][j])
             }
         }
     }
