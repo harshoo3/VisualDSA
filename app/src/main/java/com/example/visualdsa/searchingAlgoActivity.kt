@@ -19,6 +19,12 @@ import kotlinx.coroutines.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.list_item.view.*
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.ViewGroup
+
+
+
 
 
 class searchingAlgoActivity : AppCompatActivity() {
@@ -47,6 +53,9 @@ class searchingAlgoActivity : AppCompatActivity() {
     var algoPaused: Boolean = false
     var speedInUSe: Double = 1.0
     var speed:Long = 1000
+    var hiddenPanel: View? = null
+    var toggle:Button? = null
+    var toggle2:Button? = null
     var notesArr = arrayOf("Note: You can customize the order of elements by dragging one element to another.", "Note: You can increase or decrease the execution speed using the above dropdown.","Note: You can press the ? icon above to know which color denotes what.")
 //    val slider:Slider = findViewById(R.id.slider)
 //    val button: Button = findViewById(R.id.randomize)
@@ -142,11 +151,56 @@ class searchingAlgoActivity : AppCompatActivity() {
                 Toast.makeText(this,"Select an element in the array first.",Toast.LENGTH_LONG).show()
             }
         }
+        hiddenPanel = findViewById(R.id.hidden_panel)
+        hiddenPanel!!.bringToFront();
+        toggle = findViewById<Button>(R.id.toggle)
+        toggle2 = findViewById<Button>(R.id.toggle2)
+        val toggleStr:String = "What is ${if(algoInUse==0)"Linear Search" else "Binary Search"}?"
+        toggle!!.text = toggleStr
+        toggle2!!.text = toggleStr
+//        val bottomUp = AnimationUtils.loadAnimation(
+//            this,
+//            R.anim.bottom_up
+//        )
+//        val hiddenPanel = findViewById<View>(R.id.hidden_panel) as ViewGroup
+//        hiddenPanel.startAnimation(bottomUp)
+//        hiddenPanel.visibility = View.VISIBLE
+//        slideUpDown(hiddenPanel)
 
         createButtonScreen(size)
         makeDropDown(searchAlgoArr,spinner.id)
         makeDropDown(speedArr,spinner2.id)
         standardSetup()
+    }
+    fun slideUpDown(view: View?) {
+        val bottomUp = AnimationUtils.loadAnimation(
+            this,
+            R.anim.bottom_up
+        )
+        val bottomDown = AnimationUtils.loadAnimation(
+            this,
+            R.anim.bottom_down
+        )
+        if (!isPanelShown()) {
+            // Show the panel
+
+            hiddenPanel!!.startAnimation(bottomUp)
+            toggle!!.startAnimation(bottomDown)
+            hiddenPanel!!.visibility = View.VISIBLE
+            toggle!!.visibility = View.INVISIBLE
+        } else {
+            // Hide the Panel
+
+            hiddenPanel!!.startAnimation(bottomDown)
+
+            toggle!!.startAnimation(bottomUp)
+            hiddenPanel!!.visibility = View.GONE
+            toggle!!.visibility = View.VISIBLE
+        }
+    }
+
+    private fun isPanelShown(): Boolean {
+        return hiddenPanel!!.visibility == View.VISIBLE
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
